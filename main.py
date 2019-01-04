@@ -3,6 +3,9 @@ from chip8 import Chip8
 
 def main():
 
+    chip_8 = Chip8()
+    chip_8.load_rom('Roms/PONG')
+        
     if not glfw.init():
         return
 
