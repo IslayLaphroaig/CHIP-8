@@ -20,4 +20,5 @@ def main():
         glfw.poll_events()
     glfw.terminate()
 
-main()
+if __name__ == "__main__":
+    main()
