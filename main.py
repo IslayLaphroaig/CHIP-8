@@ -16,6 +16,8 @@ def main():
     glfw.make_context_current(window)
 
     while not glfw.window_should_close(window):
+        if not chip_8.emulate_cycle():
+            break
         glfw.swap_buffers(window)
         glfw.poll_events()
     glfw.terminate()

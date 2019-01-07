@@ -1,4 +1,4 @@
-from ctypes import c_ubyte, create_string_buffer, c_ushort
+from ctypes import c_ubyte, c_ushort, create_string_buffer
 
 class Chip8:
 
@@ -16,10 +16,15 @@ class Chip8:
         self.display = create_string_buffer(64 * 32)
         
     def load_rom(self, rom):
+        address = 0x200
         with open(rom, "rb") as r:
-            address = 0x200
             byte = r.read(1)
             while byte:
                 self.memory[address] = byte[0]
+                address += 1
                 byte = r.read(1)
-                print(byte)
+    
+    def emulate_cycle(self):
+        #fetch opcode
+        self.opcode = int.from_bytes(self.memory[self.PC.value], byteorder='big') << 8 | int.from_bytes(self.memory[self.PC.value + 1], byteorder='big')
+        return True
