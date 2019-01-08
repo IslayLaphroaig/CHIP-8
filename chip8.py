@@ -1,30 +1,49 @@
-from ctypes import c_ubyte, c_ushort, create_string_buffer
+import numpy as np
 
 class Chip8:
 
+    np.set_printoptions(threshold=np.nan) # for debugging
+    np.set_printoptions(formatter={'int':lambda x:hex(int(x))})
+
     def __init__(self):
-        self.opcode = c_ushort(0)
-        self.memory = create_string_buffer(4096)
-        self.V = create_string_buffer(16)
-        self.I = c_ushort(0)
-        self.PC = c_ushort(0x200)
-        self.stack = create_string_buffer(16)
-        self.stack_pointer = c_ushort(0)
-        self.delay_timer = c_ubyte(0)
-        self.sound_timer = c_ubyte(0)
-        self.keys = create_string_buffer(16)
-        self.display = create_string_buffer(64 * 32)
-        
+        self.opcode = np.uint16(0)
+        self.memory = np.zeros(4096, dtype=np.uint8)
+        self.V = np.zeros(16, dtype=np.uint8)
+        self.I = np.uint16(0)
+        self.PC = np.uint16(0x200)
+        self.stack = np.zeros(16, dtype=np.uint8)
+        self.stack_pointer = np.uint16(0)
+        self.delay_timer = np.uint8(0)
+        self.sound_timer = np.uint8(0)
+        self.keys = np.zeros(16, dtype=np.uint8)
+        self.display = np.zeros(64 * 32, dtype=np.uint8)
+        self.font_set = np.zeros(80, dtype=np.uint8)
+
+    def load_fontset(self):
+        self.font_set = np.array([
+            0xF0, 0x90, 0x90, 0x90, 0xF0, # 0
+            0x20, 0x60, 0x20, 0x20, 0x70, # 1
+            0xF0, 0x10, 0xF0, 0x80, 0xF0, # 2
+            0xF0, 0x10, 0xF0, 0x10, 0xF0, # 3
+            0x90, 0x90, 0xF0, 0x10, 0x10, # 4
+            0xF0, 0x80, 0xF0, 0x10, 0xF0, # 5
+            0xF0, 0x80, 0xF0, 0x90, 0xF0, # 6
+            0xF0, 0x10, 0x20, 0x40, 0x40, # 7
+            0xF0, 0x90, 0xF0, 0x90, 0xF0, # 8
+            0xF0, 0x90, 0xF0, 0x10, 0xF0, # 9
+            0xF0, 0x90, 0xF0, 0x90, 0x90, # A
+            0xE0, 0x90, 0xE0, 0x90, 0xE0, # B
+            0xF0, 0x80, 0x80, 0x80, 0xF0, # C
+            0xE0, 0x90, 0x90, 0x90, 0xE0, # D
+            0xF0, 0x80, 0xF0, 0x80, 0xF0, # E
+            0xF0, 0x80, 0xF0, 0x80, 0x80  # F
+            ], dtype=np.uint8)
+
+        self.memory = np.insert(self.memory, 0x50, self.font_set, axis=0)
+
     def load_rom(self, rom):
-        address = 0x200
-        with open(rom, "rb") as r:
-            byte = r.read(1)
-            while byte:
-                self.memory[address] = byte[0]
-                address += 1
-                byte = r.read(1)
-    
+        data = np.fromfile(rom, dtype=np.uint8)
+        self.memory = np.insert(self.memory, 0x200, data, axis=0)
+
     def emulate_cycle(self):
-        #fetch opcode
-        self.opcode = int.from_bytes(self.memory[self.PC.value], byteorder='big') << 8 | int.from_bytes(self.memory[self.PC.value + 1], byteorder='big')
         return True
