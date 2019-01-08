@@ -43,4 +43,6 @@ class Chip8:
         self.memory = np.insert(self.memory, 0x200, data, axis=0)
 
     def emulate_cycle(self):
+        self.opcode = np.bitwise_or(np.left_shift(self.memory[self.PC], 8), self.memory[self.PC])
+        print(self.opcode)
         return True
