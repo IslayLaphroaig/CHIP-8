@@ -128,6 +128,24 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0xD000:
             print("0xD000")
+            x = uint16(self.V[X(self.opcode)])
+            y = uint16(self.V[Y(self.opcode)])
+            height = uint16(N(self.opcode))
+            pixel = uint16(0)
+            self.V[0xF] = 0
+            yline = uint16(0)
+
+            while yline < height:
+                pixel = self.memory[self.I + yline]
+                xline = uint16(0)
+                while xline < uint16(8):
+                    if(right_shift(pixel, xline)) != 0:
+                        if(self.display[x + xline + ((y + yline) * 64)] == 0):
+                            self.V[0xF] = 1
+                        elif self.display[x + xline + ((y + yline) * 64)] == 1:
+                            self.V[0xF] = 2
+
+            self.PC +=2
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0xE09E:
             print("0xE09E")
