@@ -43,6 +43,118 @@ class Chip8:
         self.memory = np.insert(self.memory, 0x200, data, axis=0)
 
     def emulate_cycle(self):
+        # fetch opcode
         self.opcode = np.bitwise_or(np.left_shift(self.memory[self.PC], np.uint16(8)), self.memory[self.PC])
         print(self.opcode)
+
+        #decode opcode
+        if(np.bitwise_and(self.opcode, 0xF000)) == 0x0000:
+            print("0x0000")
+
+        elif(self.opcode == 0x00E0):
+            print("0x00E0")
+
+        elif(self.opcode == 0x00EE):
+            print("0x00EE")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x1000:
+            print("0x1000")    
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x2000:
+            print("0x2000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x3000:
+            print("0x3000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x4000:
+            print("0x4000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x5000:
+            print("0x5000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x6000:
+            print("0x6000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x7000:
+            print("0x7000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x8000:
+            print("0x8000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x8001:
+            print("0x8001")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x8002:
+            print("0x8002")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x8003:
+            print("0x8003")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x8004:
+            print("0x8004")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x8005:
+            print("0x8005")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x8006:
+            print("0x8006")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x8007:
+            print("0x8007")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x8008:
+            print("0x8008")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0x9000:
+            print("0x9000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xA000:
+            print("0xA000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xB000:
+            print("0xB000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xC000:
+            print("0xC000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xD000:
+            print("0xD000")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xE09E:
+            print("0xE09E")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xE0A1:
+            print("0xE0A1")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xF007:
+            print("0xF007")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xF00A:
+            print("0xF00A")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xF015:
+            print("0xF015")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xF018:
+            print("0xF018")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xF01E:
+            print("0xF01E")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xF029:
+            print("0xF029")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xF033:
+            print("0xF033")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xF055:
+            print("0xF055")
+
+        elif(np.bitwise_and(self.opcode, 0xF00)) == 0xF065:
+            print("0xF065")
+
+        else:
+            print("Invalid Opcode")
+            return False
+        
         return True
