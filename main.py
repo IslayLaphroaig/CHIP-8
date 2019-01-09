@@ -5,7 +5,7 @@ def main():
 
     chip_8 = Chip8()
     chip_8.load_rom('Roms/PONG')
-    print(chip_8.memory)
+    #print(chip_8.memory)
     chip_8.emulate_cycle()
 
     if not glfw.init():
@@ -18,8 +18,8 @@ def main():
     glfw.make_context_current(window)
 
     while not glfw.window_should_close(window):
-        #if not chip_8.emulate_cycle():
-            #break
+        if not chip_8.emulate_cycle():
+            break
         glfw.swap_buffers(window)
         glfw.poll_events()
     glfw.terminate()
