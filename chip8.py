@@ -37,6 +37,7 @@ class Chip8:
         self.keys = zeros(16, dtype=uint8)
         self.display = zeros(64 * 32, dtype=uint8)
         self.memory = insert(self.memory, 0x50, self.font_set, axis=0)
+        self.draw_flag = False
 
     def load_rom(self, rom):
         data = fromfile(rom, dtype=uint8)
@@ -67,6 +68,9 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x2000:
             print("0x2000")
+            self.stack[self.stack_pointer] = self.PC
+            self.stack_pointer += 1
+            self.PC = NNN(self.opcode)
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x3000:
             print("0x3000")
@@ -145,43 +149,44 @@ class Chip8:
                             self.V[0xF] = 1
                             bitwise_xor(self.display[x + xline + ((y + yline) * 64)], 1)
                         xline += 1
+            self.draw_flag = True
             self.PC +=2
 
-        elif(bitwise_and(self.opcode, 0xF000)) == 0xE09E:
+        elif(bitwise_and(self.opcode, 0xF0FF)) == 0xE09E:
             print("0xE09E")
 
-        elif(bitwise_and(self.opcode, 0xF000)) == 0xE0A1:
+        elif(bitwise_and(self.opcode, 0xF0FF)) == 0xE0A1:
             print("0xE0A1")
 
-        elif(bitwise_and(self.opcode, 0xF000)) == 0xF007:
+        elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF007:
             print("0xF007")
 
-        elif(bitwise_and(self.opcode, 0xF000)) == 0xF00A:
+        elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF00A:
             print("0xF00A")
 
-        elif(bitwise_and(self.opcode, 0xF000)) == 0xF015:
+        elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF015:
             print("0xF015")
 
-        elif(bitwise_and(self.opcode, 0xF000)) == 0xF018:
+        elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF018:
             print("0xF018")
 
-        elif(bitwise_and(self.opcode, 0xF000)) == 0xF01E:
+        elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF01E:
             print("0xF01E")
 
-        elif(bitwise_and(self.opcode, 0xF000)) == 0xF029:
+        elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF029:
             print("0xF029")
 
-        elif(bitwise_and(self.opcode, 0xF000)) == 0xF033:
+        elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF033:
             print("0xF033")
 
-        elif(bitwise_and(self.opcode, 0xF000)) == 0xF055:
+        elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF055:
             print("0xF055")
 
-        elif(bitwise_and(self.opcode, 0xF000)) == 0xF065:
+        elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF065:
             print("0xF065")
 
         else:
-            print("Invalid Opcode")
+            print("Invalid Opcode", self.opcode)
             return False
         
         return True

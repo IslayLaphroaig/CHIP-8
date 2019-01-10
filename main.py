@@ -18,6 +18,9 @@ def main():
     while not glfw.window_should_close(window):
         if not chip_8.emulate_cycle():
             break
+        if chip_8.draw_flag == True:
+            print("Draw Successful")
+            chip_8.draw_flag = False
         glfw.swap_buffers(window)
         glfw.poll_events()
     glfw.terminate()
