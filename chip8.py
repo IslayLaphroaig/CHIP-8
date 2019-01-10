@@ -59,6 +59,7 @@ class Chip8:
 
         elif(self.opcode == 0x00E0):
             print("0x00E0")
+            zeros(self.display)
 
         elif(self.opcode == 0x00EE):
             print("0x00EE")
@@ -103,6 +104,12 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x8004:
             print("0x8004")
+            if (self.V[Y(self.opcode)]) > (0xFF - self.V[X(self.opcode)]):
+                self.V[0xF] = 1
+            else:
+                self.V[0xF] = 0
+            self.V[X(self.opcode)] += self.V[Y(self.opcode)]
+            self.PC += 2
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x8005:
             print("0x8005")
@@ -178,6 +185,10 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF033:
             print("0xF033")
+            self.memory[self.I] = self.V[X(self.opcode)] / uint16(100)
+            self.memory[self.I + 1] = self.V[X(self.opcode)] / uint16(10) % 10
+            self.memory[self.I + 2] = self.V[X(self.opcode)] % uint16(100) % 10
+            self.PC += 2
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF055:
             print("0xF055")
