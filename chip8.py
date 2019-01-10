@@ -173,12 +173,18 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF015:
             print("0xF015")
+            self.delay_timer = self.V[X(self.opcode)]
+            self.PC += 2
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF018:
             print("0xF018")
+            self.sound_timer = self.V[X(self.opcode)]
+            self.PC += 2
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF01E:
             print("0xF01E")
+            self.I = self.V[X(self.opcode)]
+            self.PC += 2
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF029:
             print("0xF029")
@@ -192,9 +198,19 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF055:
             print("0xF055")
+            self.memory = insert(self.memory,
+                                 self.memory[self.I:self.I + X(self.opcode) + 1],
+                                 self.V[X(self.opcode) + 1],
+                                 axis=0)
+            self.PC += 2
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF065:
             print("0xF065")
+            self.V = insert(self.V,
+                            self.V[X(self.opcode) + 1],
+                            self.memory[self.I:self.I + X(self.opcode) + 1],
+                            axis=0)
+            self.PC += 2
 
         else:
             print("Invalid Opcode", self.opcode)
