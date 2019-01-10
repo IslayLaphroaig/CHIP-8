@@ -5,8 +5,6 @@ def main():
 
     chip_8 = Chip8()
     chip_8.load_rom('Roms/PONG')
-    #print(chip_8.memory)
-    chip_8.emulate_cycle()
 
     if not glfw.init():
         return
