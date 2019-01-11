@@ -44,11 +44,11 @@ class Chip8:
         self.memory = insert(self.memory, 0x200, data, axis=0)
 
     def emulate_cycle(self):
-        NNN = lambda opcode : bitwise_and(self.opcode, 0XFFF) # Address
-        NN  = lambda opcode : bitwise_and(self.opcode, 0XFF) # 8-bit constant
-        N   = lambda opcode : bitwise_and(self.opcode, 0xF) # 4-bit constant
-        X   = lambda opcode : bitwise_and(right_shift(self.opcode, uint16(8)), 0xF) # X Register Identifier
-        Y   = lambda opcode : bitwise_and(right_shift(self.opcode, uint16(4)), 0xF) # Y Register Identifier
+        NNN = lambda opcode : bitwise_and(self.opcode, 0XFFF) # A 12-bit value, the lowest 12 bits of the instruction
+        KK  = lambda opcode : bitwise_and(self.opcode, 0XFF) # An 8-bit value, the lowest 8 bits of the instruction
+        N   = lambda opcode : bitwise_and(self.opcode, 0xF) # A 4-bit value, the lowest 4 bits of the instruction
+        X   = lambda opcode : bitwise_and(right_shift(self.opcode, uint16(8)), 0xF) # A 4-bit value, the lower 4 bits of the high byte of the instruction
+        Y   = lambda opcode : bitwise_and(right_shift(self.opcode, uint16(4)), 0xF) # A 4-bit value, the upper 4 bits of the low byte of the instruction
 
         # fetch opcode
         self.opcode = bitwise_or(left_shift(self.memory[self.PC], uint16(8)), self.memory[self.PC + uint16(1)])
@@ -84,7 +84,7 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x6000:
             print("0x6000")
-            self.V[X(self.opcode)] = NN(self.opcode)
+            self.V[X(self.opcode)] = KK(self.opcode)
             self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x7000:
@@ -170,6 +170,8 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF007:
             print("0xF007")
+            self.V[X(self.opcode)] += KK(self.opcode)
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF00A:
             print("0xF00A")
