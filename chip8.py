@@ -82,9 +82,15 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x4000:
             print("0x4000")
+            if(self.V[X(self.opcode)]) == KK(self.opcode):
+                self.PC += uint16(2)
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x5000:
             print("0x5000")
+            if(self.V[X(self.opcode)]) != KK(self.opcode):
+                self.PC += uint16(2)
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x6000:
             print("0x6000")
