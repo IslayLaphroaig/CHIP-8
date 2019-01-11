@@ -65,7 +65,8 @@ class Chip8:
             self.PC += 2
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x1000:
-            print("0x1000")    
+            print("0x1000")
+            self.PC = NNN(self.opcode)
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x2000:
             print("0x2000")
@@ -75,6 +76,9 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x3000:
             print("0x3000")
+            if self.V[X(self.opcode)] == KK(self.opcode):
+                self.PC += uint16(2)
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x4000:
             print("0x4000")
@@ -94,15 +98,23 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8000:
             print("0x8000")
+            self.V[X(self.opcode)] = self.V[Y(self.opcode)]
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8001:
             print("0x8001")
+            self.V[X(self.opcode)] = bitwise_or(self.V[X(self.opcode)], self.V[Y(self.opcode)])
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8002:
             print("0x8002")
+            self.V[X(self.opcode)] = bitwise_and(self.V[X(self.opcode)], self.V[Y(self.opcode)])
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8003:
             print("0x8003")
+            self.V[X(self.opcode)] = bitwise_xor(self.V[X(self.opcode)], self.V[Y(self.opcode)])
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8004:
             print("0x8004")
@@ -138,6 +150,8 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0xC000:
             print("0xC000")
+            bitwise_and(random.randint(0, 255, dtype=uint8), KK(self.opcode))
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0xD000:
             print("0xD000")
@@ -167,6 +181,9 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xE0A1:
             print("0xE0A1")
+            if not self.keys[self.V[X(self.opcode)]]:
+                self.PC += uint16(2)
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF007:
             print("0xF007")
