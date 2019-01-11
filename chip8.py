@@ -133,6 +133,12 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8005:
             print("0x8005")
+            if self.V[X(self.opcode)] > self.V[Y(self.opcode)]:
+                self.V[0xF] = uint8(1)
+            else:
+                self.V[0xF] = uint8(0)
+            self.V[X(self.opcode)] -= self.V[Y(self.opcode)]
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8006:
             print("0x8006")
