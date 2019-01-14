@@ -36,7 +36,7 @@ class Chip8:
         self.sound_timer = uint8(0)
         self.keys = zeros(16, dtype=uint8)
         self.display = zeros(64 * 32, dtype=uint8)
-        self.memory = insert(self.memory, 0x50, self.font_set, axis=0)
+        self.memory = insert(self.memory, 0x0, self.font_set, axis=0)
         self.draw_flag = False
 
     def load_rom(self, rom):
@@ -167,26 +167,24 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0xD000:
             print("0xD000")
-            x = uint16(self.V[right_shift(bitwise_and(self.opcode, 0x0F00), uint8(8))])
-            y = uint16(self.V[right_shift(bitwise_and(self.opcode, 0x00F0), uint8(4))])
-            height = uint16(bitwise_and(self.opcode, 0x000F))
-            pixel = uint16(0)
-            yline = uint16(0)
+            x_reg = self.V[X(self.opcode)]
+            y_reg = self.V[Y(self.opcode)]
+            height = N(self.opcode)
             self.V[0xF] = uint8(0)
-
-            while yline < height:
-                pixel = uint16(self.memory[self.I + yline])
-                xline = uint16(0)
-                while xline < uint16(8):
-                    if(bitwise_and(pixel, right_shift(int8(0x80), xline)) != uint8(0)):
-                        if(self.display[(x + xline + ((y + yline) * uint8(64)))] == uint8(1)):
-                            self.V[0xF] = uint8(1)
-                            self.display = bitwise_xor(self.display[x + xline + ((y + yline) * uint8(64))], uint8(1))
-                    xline += uint16(1)
-                yline += uint16(1)
             
-            self.draw_flag = True
+            for y in range(y_reg, y_reg + height):
+                pixel = self.memory[self.I + (y - y_reg)]
+                for x in range(x_reg, x_reg + uint8(8)):
+                    pixel_location = x - x_reg
+                    x %= uint8(64)
+                    y %= uint8(32)
+                    set_before = self.display[x + uint8(64) * y]
+                    set_after = set_before ^ ((pixel >> (uint8(7) - pixel_location)) & uint8(1))
+                    self.display[x + uint8(64) * y] = set_after
+                    if set_before and not set_after:
+                        self.V[0xF] = uint8(1)
             self.PC += uint16(2)
+            self.draw_flag = True
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xE09E:
             print("0xE09E")
@@ -234,19 +232,19 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF055:
             print("0xF055")
-            self.memory = insert(self.memory,
-                                 self.memory[self.I:self.I + X(self.opcode) + 1],
-                                 self.V[X(self.opcode) + 1],
-                                 axis=0)
-            self.PC += 2
+            index = uint16(0)
+            while index <= X(self.opcode):
+                self.memory[self.I + index] = self.V[index]
+                index += uint16(1)
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF065:
             print("0xF065")
-            self.V = insert(self.V,
-                            self.V[X(self.opcode) + 1],
-                            self.memory[self.I:self.I + X(self.opcode) + 1],
-                            axis=0)
-            self.PC += 2
+            index = uint16(0)
+            while index <= X(self.opcode):
+                self.V[index] = self.memory[self.I + index]
+                index += uint16(1)
+            self.PC += uint16(2)
 
         else:
             print("Invalid Opcode", self.opcode)
