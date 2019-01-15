@@ -56,7 +56,9 @@ class Chip8:
         #decode opcode
         if(self.opcode == 0x00E0):
             print("0x00E0")
-            zeros(self.display)
+            self.display.fill(uint8(0))
+            self.PC += int16(2)
+            self.draw_flag = True
 
         elif(self.opcode == 0x00EE):
             print("0x00EE")
@@ -82,7 +84,7 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x4000:
             print("0x4000")
-            if(self.V[X(self.opcode)]) == KK(self.opcode):
+            if self.V[X(self.opcode)] != KK(self.opcode):
                 self.PC += uint16(2)
             self.PC += uint16(2)
 
@@ -99,7 +101,7 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x7000:
             print("0x7000")
-            self.V[X(self.opcode)] = self.V[Y(self.opcode)]
+            self.V[X(self.opcode)] += KK(self.opcode)
             self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8000:
@@ -124,20 +126,22 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8004:
             print("0x8004")
-            if (self.V[Y(self.opcode)]) > (0xFF - self.V[X(self.opcode)]):
-                self.V[0xF] = 1
-            else:
-                self.V[0xF] = 0
-            self.V[X(self.opcode)] += self.V[Y(self.opcode)]
+            self.V[0xF] = uint8(0)
+            total = uint16(self.V[X(self.opcode)]) + uint16(self.V[Y(self.opcode)])
+            if(total > uint16(255)):
+                self.V[0xF] = uint8(1)
+                total -= uint16(256)
+            self.V[X(self.opcode)] = uint16(total)
             self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8005:
             print("0x8005")
-            if self.V[X(self.opcode)] > self.V[Y(self.opcode)]:
-                self.V[0xF] = uint8(1)
-            else:
+            self.V[0xF] = uint8(1)
+            difference = int16(self.V[X(self.opcode)]) - int16(self.V[Y(self.opcode)])
+            if (difference < uint8(0)):
                 self.V[0xF] = uint8(0)
-            self.V[X(self.opcode)] -= self.V[Y(self.opcode)]
+                difference += uint8(256)
+            self.V[X(self.opcode)] = uint16(difference)
             self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8006:
@@ -145,6 +149,13 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8007:
             print("0x8007")
+            self.V[0xf] = uint8(1)
+            difference = int16(self.V[Y(self.opcode)]) - int16(self.V[X(self.opcode)])
+            if (difference < uint8(0)):
+                self.V[0xF] = uint8(0)
+                difference += uint8(256)
+            self.V[X(self.opcode)] = uint16(difference)
+            self.PC += 2
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8008:
             print("0x8008")
@@ -164,25 +175,23 @@ class Chip8:
             print("0xC000")
             bitwise_and(random.randint(0, 255, dtype=uint8), KK(self.opcode))
             self.PC += uint16(2)
-
+            
         elif(bitwise_and(self.opcode, 0xF000)) == 0xD000:
-            print("0xD000")
-            x_reg = self.V[X(self.opcode)]
-            y_reg = self.V[Y(self.opcode)]
+            x = self.V[X(self.opcode)]
+            y = self.V[Y(self.opcode)]
             height = N(self.opcode)
             self.V[0xF] = uint8(0)
-            
-            for y in range(y_reg, y_reg + height):
-                pixel = self.memory[self.I + (y - y_reg)]
-                for x in range(x_reg, x_reg + uint8(8)):
-                    pixel_location = x - x_reg
-                    x %= uint8(64)
-                    y %= uint8(32)
-                    set_before = self.display[x + uint8(64) * y]
-                    set_after = set_before ^ ((pixel >> (uint8(7) - pixel_location)) & uint8(1))
-                    self.display[x + uint8(64) * y] = set_after
+            for y_line in range(y, y + height):
+                pixel = self.memory[self.I + (y_line - y)]
+                for x_line in range(x, x + uint8(8)):
+                    pixel_position = x_line - x
+                    x_line %= uint8(64)
+                    y_line %= uint8(32)
+                    set_before = uint8(self.display[x_line + uint8(64) * y_line])
+                    set_after = uint8(bitwise_xor(set_before, bitwise_and((right_shift(pixel, uint8(7) - pixel_position)), uint8(1))))
+                    self.display[x_line + uint8(64) * y_line] = set_after
                     if set_before and not set_after:
-                        self.V[0xF] = uint8(1)
+                        self.V[0xF] = uint8(1)        
             self.PC += uint16(2)
             self.draw_flag = True
 
@@ -197,7 +206,7 @@ class Chip8:
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF007:
             print("0xF007")
-            self.V[X(self.opcode)] += KK(self.opcode)
+            self.V[X(self.opcode)] = self.delay_timer
             self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF0FF)) == 0xF00A:

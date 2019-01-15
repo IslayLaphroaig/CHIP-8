@@ -19,7 +19,6 @@ def main():
         glfw.terminate()
         return
 
-    glfw.set_framebuffer_size_callback(window, glViewport(0, 0, 64, 32))
     glfw.make_context_current(window)
     glfw.swap_interval(0)
     glClearColor(0.0, 0.0, 0.0, 1.0)
@@ -27,7 +26,6 @@ def main():
     glLoadIdentity()
     gluOrtho2D(0, (WIDTH * MODIFIER), (HEIGHT * MODIFIER), 0)
     glMatrixMode(GL_MODELVIEW)
-    glViewport(0, 0, (WIDTH * MODIFIER), (HEIGHT * MODIFIER))
 
     while not glfw.window_should_close(window):
         if not chip_8.emulate_cycle():
