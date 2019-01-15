@@ -28,6 +28,7 @@ def main():
     glMatrixMode(GL_MODELVIEW)
 
     while not glfw.window_should_close(window):
+        chip_8.update_timers()
         if not chip_8.emulate_cycle():
             break
         if chip_8.draw_flag == True:
