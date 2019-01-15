@@ -71,8 +71,8 @@ class Chip8:
 
         elif(self.opcode == 0x00EE):
             print("0x00EE")
-            self.PC = self.stack[0]
-            self.stack_pointer -= uint16(1)
+            self.stack_pointer -= uint8(1)
+            self.PC = self.stack[self.stack_pointer]
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x1000:
             print("0x1000")
@@ -82,7 +82,7 @@ class Chip8:
             print("0x2000")
             self.stack[self.stack_pointer] = self.PC
             self.stack_pointer += uint16(1)
-            self.PC = uint16(NNN(self.opcode))
+            self.PC = NNN(self.opcode)
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x3000:
             print("0x3000")
@@ -153,7 +153,7 @@ class Chip8:
                 difference += uint8(256)
             self.V[X(self.opcode)] = uint16(difference)
 
-        elif(bitwise_and(self.opcode, 0xF00F)) == 0x8008:
+        elif(bitwise_and(self.opcode, 0xF00F)) == 0x800E:
             print("0x8008")
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x9000:
