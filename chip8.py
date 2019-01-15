@@ -41,16 +41,16 @@ class Chip8:
 
     def load_rom(self, rom):
         data = fromfile(rom, dtype=uint8)
-        self.memory = insert(self.memory, 0x200, data, axis=0)
+        self.memory = insert(self.memory, 0x200, data, axis=0)        
 
     def update_timers(self):
         if self.delay_timer > uint8(0):
             self.delay_timer -= uint8(1)
             
-        if self.sound_timer > uint8(0):
-            if self.sound_timer == uint8(1):
-                print("Sound should play")
-                self.sound_timer -= uint8(1)
+        if self.sound_timer > 0:
+            if self.sound_timer == 1:
+                print("\a") #simple alarm sound
+            self.sound_timer -= 1
 
     def emulate_cycle(self):
         NNN = lambda opcode : bitwise_and(self.opcode, 0XFFF) # A 12-bit value, the lowest 12 bits of the instruction
@@ -73,7 +73,7 @@ class Chip8:
             print("0x00EE")
             self.PC = self.stack[0]
             self.stack_pointer -= uint16(1)
-            self.PC += 2
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF000)) == 0x1000:
             print("0x1000")
@@ -164,7 +164,7 @@ class Chip8:
                 self.V[0xF] = uint8(0)
                 difference += uint8(256)
             self.V[X(self.opcode)] = uint16(difference)
-            self.PC += 2
+            self.PC += uint16(2)
 
         elif(bitwise_and(self.opcode, 0xF00F)) == 0x8008:
             print("0x8008")
