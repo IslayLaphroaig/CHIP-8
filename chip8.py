@@ -218,7 +218,7 @@ class Chip8:
 
         elif(self.opcode & 0xF0FF) == 0xF01E:
             print("0xF01E")
-            self.I = self.V[X(self.opcode)]
+            self.I += self.V[X(self.opcode)]
 
         elif(self.opcode & 0xF0FF) == 0xF029:
             print("0xF029")
