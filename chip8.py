@@ -53,11 +53,11 @@ class Chip8:
             self.sound_timer -= 1
 
     def emulate_cycle(self):
-        NNN = lambda opcode : self.opcode & 0XFFF # A 12-bit value, the lowest 12 bits of the instruction
-        NN  = lambda opcode : self.opcode & 0XFF # An 8-bit value, the lowest 8 bits of the instruction
-        N   = lambda opcode : self.opcode & 0xF # A 4-bit value, the lowest 4 bits of the instruction
-        X   = lambda opcode : (self.opcode >> uint16(8)) & 0xF # A 4-bit value, the lower 4 bits of the high byte of the instruction
-        Y   = lambda opcode : (self.opcode >> uint16(4)) & 0xF # A 4-bit value, the upper 4 bits of the low byte of the instruction
+        NNN = lambda opcode : self.opcode & 0X0FFF # A 12-bit value, the lowest 12 bits of the instruction
+        NN  = lambda opcode : self.opcode & 0X00FF # An 8-bit value, the lowest 8 bits of the instruction
+        N   = lambda opcode : self.opcode & 0x000F # A 4-bit value, the lowest 4 bits of the instruction
+        X   = lambda opcode : (self.opcode & 0x0F00) >> uint8(8) # A 4-bit value, the lower 4 bits of the high byte of the instruction
+        Y   = lambda opcode : (self.opcode & 0x00F0) >> uint8(4) # A 4-bit value, the upper 4 bits of the low byte of the instruction
 
         # fetch opcode
         self.opcode = self.memory[self.PC] << uint16(8) | self.memory[self.PC + uint16(1)]
@@ -143,6 +143,8 @@ class Chip8:
 
         elif(self.opcode & 0xF00F) == 0x8006:
             print("0x8006")
+            self.V[0xF] = self.V[X(self.opcode)] & uint8(1)
+            self.V[X(self.opcode)] = self.V[X(self.opcode)] >> uint8(1)
 
         elif(self.opcode & 0xF00F) == 0x8007:
             print("0x8007")
@@ -155,8 +157,8 @@ class Chip8:
 
         elif(self.opcode & 0xF00F) == 0x800E:
             print("0x800E")
-            self.V[0xF] = self.V[X(self.opcode)] & uint8(0x80)
-            self.V[X(self.opcode)] <<= uint8(1)
+            self.V[0xF] = (self.V[X(self.opcode)] >> uint8(7)) & uint8(1)
+            self.V[X(self.opcode)] = self.V[X(self.opcode)] << uint8(1)
 
         elif(self.opcode & 0xF000) == 0x9000:
             print("0x9000")
@@ -223,9 +225,9 @@ class Chip8:
 
         elif(self.opcode & 0xF0FF) == 0xF033:
             print("0xF033")
-            self.memory[self.I] = self.V[X(self.opcode)] / uint16(100)
-            self.memory[self.I + 1] = self.V[X(self.opcode)] / uint16(10) % 10
-            self.memory[self.I + 2] = self.V[X(self.opcode)] % uint16(100) % 10
+            self.memory[self.I] = self.V[X(self.opcode)] / uint8(100)
+            self.memory[self.I + uint16(1)] = (self.V[X(self.opcode)] / uint8(10)) % uint8(10)
+            self.memory[self.I + uint16(2)] = self.V[X(self.opcode)] % uint8(10)
 
         elif(self.opcode & 0xF0FF) == 0xF055:
             print("0xF055")
