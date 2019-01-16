@@ -179,17 +179,18 @@ class Chip8:
             y = self.V[Y(self.opcode)]
             height = N(self.opcode)
             self.V[0xF] = uint8(0)
-            for y_line in range(y, y + height):
-                pixel = self.memory[self.I + (y_line - y)]
-                for x_line in range(x, x + uint8(8)):
-                    pixel_position = x_line - x
-                    x_line %= uint8(64)
-                    y_line %= uint8(32)
-                    set_before = uint8(self.display[x_line + uint8(64) * y_line])
-                    set_after = uint8(set_before ^ (pixel >> uint8(7) - pixel_position) & uint8(1))
-                    self.display[x_line + uint8(64) * y_line] = set_after
-                    if set_before and not set_after:
-                        self.V[0xF] = uint8(1)  
+            yline = uint16(0)
+            
+            while yline < height:
+                pixel = self.memory[self.I + yline]
+                xline = uint16(0)
+                while xline < uint16(8):
+                    if((pixel & (uint8(0x80) >> xline)) != uint8(0)):
+                        if(self.display[x + xline + ((y + yline) * uint8(64))] == uint8(1)):
+                            self.V[0xF] = uint8(0x1)
+                        self.display[x + xline + ((y + yline) * uint8(64))] ^= uint8(1)
+                    xline += uint16(1)
+                yline += uint16(1)
             self.draw_flag = True
 
         elif(self.opcode & 0xF0FF) == 0xE09E:
