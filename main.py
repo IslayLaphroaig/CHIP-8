@@ -35,7 +35,7 @@ def main():
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             for y in range(32):
                 for x in range(64):
-                    if(chip_8.display[x + 64 * y] == 0):
+                    if chip_8.display[x + (64 * y)] == 0:
                         glColor3f(0.0, 0.0, 0.0)
                     else:
                         glColor3f(1.0, 1.0, 1.0)
@@ -51,5 +51,4 @@ def main():
         glfw.poll_events()
     glfw.terminate()
 
-if __name__ == "__main__":
-    main()
+main()
