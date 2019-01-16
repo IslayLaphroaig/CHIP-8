@@ -11,6 +11,24 @@ def main():
     chip_8 = Chip8()
     chip_8.load_rom('Roms/PONG')
 
+    def key_callback(window, key, scancode, action, mods):
+        if   key == glfw.KEY_1: chip_8.keys[0x1]  = 1
+        elif key == glfw.KEY_2: chip_8.keys[0x2]  = 1
+        elif key == glfw.KEY_3: chip_8.keys[0x3]  = 1
+        elif key == glfw.KEY_4: chip_8.keys[0x4]  = 1
+        elif key == glfw.KEY_Q: chip_8.keys[0x5]  = 1
+        elif key == glfw.KEY_W: chip_8.keys[0x6]  = 1
+        elif key == glfw.KEY_E: chip_8.keys[0x7]  = 1
+        elif key == glfw.KEY_R: chip_8.keys[0x8]  = 1
+        elif key == glfw.KEY_A: chip_8.keys[0x9]  = 1
+        elif key == glfw.KEY_S: chip_8.keys[0xA]  = 1
+        elif key == glfw.KEY_D: chip_8.keys[0xB]  = 1
+        elif key == glfw.KEY_F: chip_8.keys[0xC]  = 1
+        elif key == glfw.KEY_Z: chip_8.keys[0xD]  = 1
+        elif key == glfw.KEY_X: chip_8.keys[0xE]  = 1
+        elif key == glfw.KEY_C: chip_8.keys[0xF]  = 1
+        elif key == glfw.KEY_V: chip_8.keys[0x10] = 1
+
     if not glfw.init():
         return
 
@@ -19,6 +37,7 @@ def main():
         glfw.terminate()
         return
 
+    glfw.set_key_callback(window, key_callback)
     glfw.make_context_current(window)
     glfw.swap_interval(0)
     glClearColor(0.0, 0.0, 0.0, 1.0)
