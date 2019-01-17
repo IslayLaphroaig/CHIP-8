@@ -10,7 +10,7 @@ from OpenGL.GL import (
     GL_QUADS,
 )
 from OpenGL.GLU import gluOrtho2D
-from src.chip8 import Chip8
+from chip8 import Chip8
 
 WIDTH = 64
 HEIGHT = 32
@@ -19,7 +19,7 @@ MODIFIER = 15
 
 def main():
     chip_8 = Chip8()
-    chip_8.load_rom("Roms/PONG")
+    chip_8.load_rom("../roms/PONG")
 
     def key_callback(window, key, scancode, action, mods):
         if key == glfw.KEY_1:
