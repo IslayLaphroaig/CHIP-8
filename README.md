@@ -1,6 +1,6 @@
 # CHIP-8 Interpreter
 
-[![Build Status](https://travis-ci.org/IslayLaphroaig/CHIP-8.svg?branch=master)](https://travis-ci.org/IslayLaphroaig/CHIP-8)
+[![Build Status](https://travis-ci.org/IslayLaphroaig/CHIP-8.svg?branch=master)](https://travis-ci.org/IslayLaphroaig/CHIP-8)&nbsp;&nbsp; | &nbsp;&nbsp;[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)&nbsp;&nbsp; |
 
 ## Description
 This project is a CHIP-8 interpretor written in Python 3.7. The goal of this project is to learn about the process of writing an interpreter/emulator while simultaneously learning about the Python programming language. The project is a work in progress and is not currently complete.
