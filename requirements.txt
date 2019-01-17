@@ -1,4 +1,3 @@
 glfw
-OpenGL.GL
-OpenGL.GLU
+PyOpenGL
 numpy
