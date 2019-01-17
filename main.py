@@ -1,6 +1,6 @@
 import glfw
-from OpenGL.GL import *
-from OpenGL.GLU import *
+from OpenGL.GL import glBegin, glClear, glColor3f, glEnd, glVertex3f, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_QUADS
+from OpenGL.GLU import gluOrtho2D
 from chip8 import Chip8
 
 WIDTH = 64
@@ -28,6 +28,7 @@ def main():
         elif key == glfw.KEY_X: chip_8.keys[0xE]  = 1
         elif key == glfw.KEY_C: chip_8.keys[0xF]  = 1
         elif key == glfw.KEY_V: chip_8.keys[0x10] = 1
+        return True
 
     if not glfw.init():
         return
@@ -39,12 +40,7 @@ def main():
 
     glfw.set_key_callback(window, key_callback)
     glfw.make_context_current(window)
-    glfw.swap_interval(0)
-    glClearColor(0.0, 0.0, 0.0, 1.0)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
     gluOrtho2D(0, (WIDTH * MODIFIER), (HEIGHT * MODIFIER), 0)
-    glMatrixMode(GL_MODELVIEW)
 
     while not glfw.window_should_close(window):
         chip_8.update_timers()
@@ -58,7 +54,6 @@ def main():
                         glColor3f(0.0, 0.0, 0.0)
                     else:
                         glColor3f(1.0, 1.0, 1.0)
-
                     glBegin(GL_QUADS)
                     glVertex3f((x * MODIFIER), (y * MODIFIER), 0.0)
                     glVertex3f((x * MODIFIER), (y * MODIFIER) + MODIFIER, 0.0)

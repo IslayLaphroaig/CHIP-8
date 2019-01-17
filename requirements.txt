@@ -1,0 +1,4 @@
+glfw
+OpenGL.GL
+OpenGL.GLU
+numpy
