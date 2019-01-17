@@ -1,9 +1,10 @@
 from numpy import *
 
+
 class Chip8:
 
-    set_printoptions(threshold=nan) # for debugging
-    set_printoptions(formatter={'int':lambda x:hex(int(x))}) # for debugging
+    set_printoptions(threshold=nan)  # for debugging
+    set_printoptions(formatter={"int": lambda x: hex(int(x))})  # for debugging
 
     font_set = array([
             0xF0, 0x90, 0x90, 0x90, 0xF0, # 0
@@ -41,29 +42,46 @@ class Chip8:
 
     def load_rom(self, rom):
         data = fromfile(rom, dtype=uint8)
-        self.memory = insert(self.memory, 0x200, data, axis=0)        
+        self.memory = insert(self.memory, 0x200, data, axis=0)
 
     def update_timers(self):
         if self.delay_timer > uint8(0):
             self.delay_timer -= uint8(1)
-            
+
         if self.sound_timer > 0:
             if self.sound_timer == 1:
-                print("\a") #simple alarm sound
+                print("\a")  # simple alarm sound
             self.sound_timer -= 1
 
     def emulate_cycle(self):
-        NNN = lambda opcode : self.opcode & 0X0FFF # A 12-bit value, the lowest 12 bits of the instruction
-        NN  = lambda opcode : self.opcode & 0X00FF # An 8-bit value, the lowest 8 bits of the instruction
-        N   = lambda opcode : self.opcode & 0x000F # A 4-bit value, the lowest 4 bits of the instruction
-        X   = lambda opcode : (self.opcode & 0x0F00) >> uint8(8) # A 4-bit value, the lower 4 bits of the high byte of the instruction
-        Y   = lambda opcode : (self.opcode & 0x00F0) >> uint8(4) # A 4-bit value, the upper 4 bits of the low byte of the instruction
+        # A 12-bit value, the lowest 12 bits of the instruction
+        NNN = (
+            lambda opcode: self.opcode & 0x0FFF
+        )
+        # An 8-bit value, the lowest 8 bits of the instruction
+        NN = (
+            lambda opcode: self.opcode & 0x00FF
+        )
+        # A 4-bit value, the lowest 4 bits of the instruction 
+        N = (
+            lambda opcode: self.opcode & 0x000F
+        )
+        # A 4-bit value, the lower 4 bits of the high byte of the instruction
+        X = lambda opcode: (
+             (self.opcode & 0x0F00) >> uint8(8)
+        )
+        # A 4-bit value, the upper 4 bits of the low byte of the instruction
+        Y = lambda opcode: (
+            (self.opcode & 0x00F0) >> uint8(4)
+        )
 
         # fetch opcode
-        self.opcode = self.memory[self.PC] << uint16(8) | self.memory[self.PC + uint16(1)]
+        self.opcode = (
+            self.memory[self.PC] << uint16(8) | self.memory[self.PC + uint16(1)]
+        )
         self.PC += uint16(2)
 
-        #decode opcode
+        # decode opcode
         if self.opcode == 0x00E0:
             print("0x00E0")
             self.display.fill(uint8(0))
@@ -148,7 +166,7 @@ class Chip8:
 
         elif self.opcode & 0xF00F == 0x8007:
             print("0x8007")
-            self.V[0xf] = uint8(1)
+            self.V[0xF] = uint8(1)
             difference = int16(self.V[Y(self.opcode)]) - int16(self.V[X(self.opcode)])
             if difference < uint8(0):
                 self.V[0xF] = uint8(0)
@@ -173,20 +191,20 @@ class Chip8:
         elif self.opcode & 0xF000 == 0xC000:
             print("0xC000")
             random.randint(0, 255, dtype=uint8) & NN(self.opcode)
-            
+
         elif self.opcode & 0xF000 == 0xD000:
             x = self.V[X(self.opcode)]
             y = self.V[Y(self.opcode)]
             height = N(self.opcode)
             self.V[0xF] = uint8(0)
             yline = uint16(0)
-            
+
             while yline < height:
                 pixel = self.memory[self.I + yline]
                 xline = uint16(0)
                 while xline < uint16(8):
-                    if((pixel & (uint8(0x80) >> xline)) != uint8(0)):
-                        if(self.display[x + xline + ((y + yline) * uint8(64))] == uint8(1)):
+                    if (pixel & (uint8(0x80) >> xline)) != uint8(0):
+                        if self.display[x + xline + ((y + yline) * uint8(64))] == uint8(1):
                             self.V[0xF] = uint8(0x1)
                         self.display[x + xline + ((y + yline) * uint8(64))] ^= uint8(1)
                     xline += uint16(1)
@@ -210,7 +228,7 @@ class Chip8:
         elif self.opcode & 0xF0FF == 0xF00A:
             print("0xF00A")
 
-        elif self.opcode& 0xF0FF == 0xF015:
+        elif self.opcode & 0xF0FF == 0xF015:
             print("0xF015")
             self.delay_timer = self.V[X(self.opcode)]
 
@@ -229,7 +247,9 @@ class Chip8:
         elif self.opcode & 0xF0FF == 0xF033:
             print("0xF033")
             self.memory[self.I] = self.V[X(self.opcode)] / uint8(100)
-            self.memory[self.I + uint16(1)] = (self.V[X(self.opcode)] / uint8(10)) % uint8(10)
+            self.memory[self.I + uint16(1)] = (
+                self.V[X(self.opcode)] / uint8(10)
+            ) % uint8(10)
             self.memory[self.I + uint16(2)] = self.V[X(self.opcode)] % uint8(10)
 
         elif self.opcode & 0xF0FF == 0xF055:
@@ -249,5 +269,5 @@ class Chip8:
         else:
             print("Invalid Opcode", self.opcode)
             return False
-        
+
         return True
