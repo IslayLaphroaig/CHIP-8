@@ -3,7 +3,7 @@
 ---
 
 | &nbsp;[![Build Status](https://travis-ci.org/IslayLaphroaig/CHIP-8.svg?branch=master)](https://travis-ci.org/IslayLaphroaig/CHIP-8)&nbsp;&nbsp; | &nbsp;&nbsp;[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)&nbsp;&nbsp; | &nbsp;&nbsp; [![code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)&nbsp;&nbsp; |
-|-------|-------|---------|
+|-------|-------|-------|
 
 ---
 

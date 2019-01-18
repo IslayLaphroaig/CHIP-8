@@ -48,32 +48,22 @@ class Chip8:
         if self.delay_timer > uint8(0):
             self.delay_timer -= uint8(1)
 
-        if self.sound_timer > 0:
-            if self.sound_timer == 1:
+        if self.sound_timer > uint8(0):
+            if self.sound_timer == uint8(1):
                 print("\a")  # simple alarm sound
-            self.sound_timer -= 1
+            self.sound_timer -= uint8(1)
 
     def emulate_cycle(self):
         # A 12-bit value, the lowest 12 bits of the instruction
-        NNN = (
-            lambda opcode: self.opcode & 0x0FFF
-        )
+        NNN = lambda opcode: self.opcode & 0x0FFF
         # An 8-bit value, the lowest 8 bits of the instruction
-        NN = (
-            lambda opcode: self.opcode & 0x00FF
-        )
-        # A 4-bit value, the lowest 4 bits of the instruction 
-        N = (
-            lambda opcode: self.opcode & 0x000F
-        )
+        NN = lambda opcode: self.opcode & 0x00FF
+        # A 4-bit value, the lowest 4 bits of the instruction
+        N = lambda opcode: self.opcode & 0x000F
         # A 4-bit value, the lower 4 bits of the high byte of the instruction
-        X = lambda opcode: (
-             (self.opcode & 0x0F00) >> uint8(8)
-        )
+        X = lambda opcode: ((self.opcode & 0x0F00) >> uint8(8))
         # A 4-bit value, the upper 4 bits of the low byte of the instruction
-        Y = lambda opcode: (
-            (self.opcode & 0x00F0) >> uint8(4)
-        )
+        Y = lambda opcode: ((self.opcode & 0x00F0) >> uint8(4))
 
         # fetch opcode
         self.opcode = (
@@ -180,6 +170,8 @@ class Chip8:
 
         elif self.opcode & 0xF000 == 0x9000:
             print("0x9000")
+            if not self.V[X(self.opcode)] == self.V[Y(self.opcode)]:
+                self.PC += 2
 
         elif self.opcode & 0xF000 == 0xA000:
             print("0xA000")
@@ -187,6 +179,7 @@ class Chip8:
 
         elif self.opcode & 0xF000 == 0xB000:
             print("0xB000")
+            self.PC = NNN(self.opcode) + self.V[0x0]
 
         elif self.opcode & 0xF000 == 0xC000:
             print("0xC000")
@@ -227,6 +220,14 @@ class Chip8:
 
         elif self.opcode & 0xF0FF == 0xF00A:
             print("0xF00A")
+            key_pressed = False
+            index = uint8(0)
+            while index < uint8(16):
+                if self.keys[index] == uint8(1):
+                    self.V[X(self.opcode)] = index
+                    key_pressed = True
+            if not key_pressed:
+                self.PC += uint16(2)
 
         elif self.opcode & 0xF0FF == 0xF015:
             print("0xF015")
@@ -249,7 +250,7 @@ class Chip8:
             self.memory[self.I] = self.V[X(self.opcode)] / uint8(100)
             self.memory[self.I + uint16(1)] = (
                 self.V[X(self.opcode)] / uint8(10)
-            ) % uint8(10)
+                ) % uint8(10)
             self.memory[self.I + uint16(2)] = self.V[X(self.opcode)] % uint8(10)
 
         elif self.opcode & 0xF0FF == 0xF055:

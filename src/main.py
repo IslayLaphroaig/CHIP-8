@@ -23,37 +23,37 @@ def main():
 
     def key_callback(window, key, scancode, action, mods):
         if key == glfw.KEY_1:
-            chip_8.keys[0x1] = 1
+            chip_8.keys[0x1] = action == glfw.PRESS
         elif key == glfw.KEY_2:
-            chip_8.keys[0x2] = 1
+            chip_8.keys[0x2] = action == glfw.PRESS
         elif key == glfw.KEY_3:
-            chip_8.keys[0x3] = 1
+            chip_8.keys[0x3] = action == glfw.PRESS
         elif key == glfw.KEY_4:
-            chip_8.keys[0x4] = 1
+            chip_8.keys[0x4] = action == glfw.PRESS
         elif key == glfw.KEY_Q:
-            chip_8.keys[0x5] = 1
+            chip_8.keys[0x5] = action == glfw.PRESS
         elif key == glfw.KEY_W:
-            chip_8.keys[0x6] = 1
+            chip_8.keys[0x6] = action == glfw.PRESS
         elif key == glfw.KEY_E:
-            chip_8.keys[0x7] = 1
+            chip_8.keys[0x7] = action == glfw.PRESS
         elif key == glfw.KEY_R:
-            chip_8.keys[0x8] = 1
+            chip_8.keys[0x8] = action == glfw.PRESS
         elif key == glfw.KEY_A:
-            chip_8.keys[0x9] = 1
+            chip_8.keys[0x9] = action == glfw.PRESS
         elif key == glfw.KEY_S:
-            chip_8.keys[0xA] = 1
+            chip_8.keys[0xA] = action == glfw.PRESS
         elif key == glfw.KEY_D:
-            chip_8.keys[0xB] = 1
+            chip_8.keys[0xB] = action == glfw.PRESS
         elif key == glfw.KEY_F:
-            chip_8.keys[0xC] = 1
+            chip_8.keys[0xC] = action == glfw.PRESS
         elif key == glfw.KEY_Z:
-            chip_8.keys[0xD] = 1
+            chip_8.keys[0xD] = action == glfw.PRESS
         elif key == glfw.KEY_X:
-            chip_8.keys[0xE] = 1
+            chip_8.keys[0xE] = action == glfw.PRESS
         elif key == glfw.KEY_C:
-            chip_8.keys[0xF] = 1
+            chip_8.keys[0xF] = action == glfw.PRESS
         elif key == glfw.KEY_V:
-            chip_8.keys[0x10] = 1
+            chip_8.keys[0x10] = action == glfw.PRESS
         return True
 
     if not glfw.init():
