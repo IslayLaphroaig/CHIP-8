@@ -22,39 +22,72 @@ def main():
     chip_8.load_rom("../roms/PONG")
 
     def key_callback(window, key, scancode, action, mods):
-        if key == glfw.KEY_1:
+        def key_1():
+            chip_8.keys[0x0] = action == glfw.PRESS
+
+        def key_2():
             chip_8.keys[0x1] = action == glfw.PRESS
-        elif key == glfw.KEY_2:
+
+        def key_3():
             chip_8.keys[0x2] = action == glfw.PRESS
-        elif key == glfw.KEY_3:
+
+        def key_4():
             chip_8.keys[0x3] = action == glfw.PRESS
-        elif key == glfw.KEY_4:
+
+        def key_Q():
             chip_8.keys[0x4] = action == glfw.PRESS
-        elif key == glfw.KEY_Q:
+
+        def key_W():
             chip_8.keys[0x5] = action == glfw.PRESS
-        elif key == glfw.KEY_W:
+
+        def key_E():
             chip_8.keys[0x6] = action == glfw.PRESS
-        elif key == glfw.KEY_E:
+
+        def key_R():
             chip_8.keys[0x7] = action == glfw.PRESS
-        elif key == glfw.KEY_R:
+
+        def key_A():
             chip_8.keys[0x8] = action == glfw.PRESS
-        elif key == glfw.KEY_A:
+
+        def key_S():
             chip_8.keys[0x9] = action == glfw.PRESS
-        elif key == glfw.KEY_S:
+
+        def key_D():
             chip_8.keys[0xA] = action == glfw.PRESS
-        elif key == glfw.KEY_D:
+
+        def key_F():
             chip_8.keys[0xB] = action == glfw.PRESS
-        elif key == glfw.KEY_F:
+
+        def key_Z():
             chip_8.keys[0xC] = action == glfw.PRESS
-        elif key == glfw.KEY_Z:
+
+        def key_X():
             chip_8.keys[0xD] = action == glfw.PRESS
-        elif key == glfw.KEY_X:
+
+        def key_C():
             chip_8.keys[0xE] = action == glfw.PRESS
-        elif key == glfw.KEY_C:
+
+        def key_V():
             chip_8.keys[0xF] = action == glfw.PRESS
-        elif key == glfw.KEY_V:
-            chip_8.keys[0x10] = action == glfw.PRESS
-        return True
+
+        return {
+            glfw.KEY_1: key_1,
+            glfw.KEY_2: key_2,
+            glfw.KEY_3: key_3,
+            glfw.KEY_4: key_4,
+            glfw.KEY_Q: key_Q,
+            glfw.KEY_W: key_W,
+            glfw.KEY_E: key_E,
+            glfw.KEY_R: key_R,
+            glfw.KEY_A: key_A,
+            glfw.KEY_S: key_S,
+            glfw.KEY_D: key_D,
+            glfw.KEY_F: key_F,
+            glfw.KEY_Z: key_Z,
+            glfw.KEY_X: key_X,
+            glfw.KEY_C: key_C,
+            glfw.KEY_V: key_V,
+        }.get(key, None)()
 
     def draw():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
