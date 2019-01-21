@@ -87,7 +87,7 @@ def main():
             glfw.KEY_X: key_X,
             glfw.KEY_C: key_C,
             glfw.KEY_V: key_V,
-        }.get(key, None)()
+        }.get(key, lambda: None)()
 
     def draw():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)

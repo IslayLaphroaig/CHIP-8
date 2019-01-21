@@ -1,11 +1,14 @@
-from numpy import *
+from numpy import (
+    fromfile, 
+    insert, 
+    random, 
+    uint8, 
+    uint16, 
+    zeros,
+)
 
 
 class Chip8:
-
-    set_printoptions(threshold=nan)  # for debugging
-    set_printoptions(formatter={"int": lambda x: hex(int(x))})  # for debugging
-
     def __init__(self):
         self.opcode = uint16(0)
         self.memory = zeros(4096, dtype=uint8)
@@ -18,8 +21,10 @@ class Chip8:
         self.sound_timer = uint8(0)
         self.keys = zeros(16, dtype=uint8)
         self.display = zeros(64 * 32, dtype=uint8)
-        self.memory = insert(self.memory, 0x0, fromfile('../font_set', dtype=uint8), axis=0)
         self.draw_flag = False
+        self.memory = insert(
+            self.memory, 0x0, fromfile("../font_set", dtype=uint8), axis=0
+        )
 
     def load_rom(self, rom):
         data = fromfile(rom, dtype=uint8)
@@ -124,7 +129,7 @@ class Chip8:
         elif self.opcode & 0xF00F == 0x8005:
             print("0x8005")
             self.V[0xF] = uint8(1)
-            difference = int16(self.V[X(self.opcode)]) - int16(self.V[Y(self.opcode)])
+            difference = uint16(self.V[X(self.opcode)]) - uint16(self.V[Y(self.opcode)])
             if difference < uint8(0):
                 self.V[0xF] = uint8(0)
                 difference += uint8(256)
@@ -138,7 +143,7 @@ class Chip8:
         elif self.opcode & 0xF00F == 0x8007:
             print("0x8007")
             self.V[0xF] = uint8(1)
-            difference = int16(self.V[Y(self.opcode)]) - int16(self.V[X(self.opcode)])
+            difference = uint16(self.V[Y(self.opcode)]) - uint16(self.V[X(self.opcode)])
             if difference < uint8(0):
                 self.V[0xF] = uint8(0)
                 difference += uint8(256)
@@ -231,7 +236,7 @@ class Chip8:
             self.memory[self.I] = self.V[X(self.opcode)] / uint8(100)
             self.memory[self.I + uint16(1)] = (
                 self.V[X(self.opcode)] / uint8(10)
-                ) % uint8(10)
+            ) % uint8(10)
             self.memory[self.I + uint16(2)] = self.V[X(self.opcode)] % uint8(10)
 
         elif self.opcode & 0xF0FF == 0xF055:
