@@ -1,4 +1,4 @@
-from numpy import fromfile, insert, random, uint8, uint16, zeros
+from numpy import fromfile, insert, int16, random, uint8, uint16, zeros
 
 
 class Chip8:
@@ -109,10 +109,10 @@ class Chip8:
 
         elif self.opcode & 0xF00F == 0x8005:
             self.v[0xF] = uint8(1)
-            difference = uint16(self.v[x(self.opcode)]) - uint16(self.v[y(self.opcode)])
-            if difference < uint8(0):
+            difference = int16(self.v[x(self.opcode)]) - int16(self.v[y(self.opcode)])
+            if difference < uint16(0):
                 self.v[0xF] = uint8(0)
-                difference += uint8(256)
+                difference += uint16(256)
             self.v[x(self.opcode)] = uint16(difference)
 
         elif self.opcode & 0xF00F == 0x8006:
@@ -121,7 +121,7 @@ class Chip8:
 
         elif self.opcode & 0xF00F == 0x8007:
             self.v[0xF] = uint8(1)
-            difference = uint16(self.v[y(self.opcode)]) - uint16(self.v[x(self.opcode)])
+            difference = int16(self.v[y(self.opcode)]) - int16(self.v[x(self.opcode)])
             if difference < uint8(0):
                 self.v[0xF] = uint8(0)
                 difference += uint8(256)
