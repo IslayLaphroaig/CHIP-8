@@ -10,6 +10,8 @@ from OpenGL.GL import (
     GL_QUADS,
 )
 from OpenGL.GLU import gluOrtho2D
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 from chip8 import Chip8
 
 WIDTH = 64
@@ -18,8 +20,9 @@ DISPLAY_MODIFIER = 15
 
 
 def main():
+    Tk().withdraw()
     chip_8 = Chip8()
-    chip_8.load_rom("roms/PONG")
+    chip_8.load_rom(askopenfilename())
 
     def key_callback(window, key, scancode, action, mods):
         def key_1():
