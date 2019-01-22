@@ -98,7 +98,10 @@ def main():
                 else:
                     glColor3f(1.0, 1.0, 1.0)
                 glBegin(GL_QUADS)
-                glVertex3f((x * DISPLAY_MODIFIER), (y * DISPLAY_MODIFIER), 0.0)
+                glVertex3f(
+                    (x * DISPLAY_MODIFIER), 
+                    (y * DISPLAY_MODIFIER), 
+                    0.0,)
                 glVertex3f(
                     (x * DISPLAY_MODIFIER),
                     (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,

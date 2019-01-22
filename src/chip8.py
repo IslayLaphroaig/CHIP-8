@@ -1,7 +1,4 @@
 from numpy import fromfile, insert, random, uint8, uint16, zeros
-import os
-
-os.chdir("..")
 
 
 class Chip8:
