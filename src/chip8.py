@@ -1,13 +1,7 @@
-from numpy import (
-    fromfile, 
-    insert, 
-    random, 
-    uint8, 
-    uint16, 
-    zeros,
-)
+from numpy import fromfile, insert, random, uint8, uint16, zeros
 import os
-os.chdir('..')
+
+os.chdir("..")
 
 
 class Chip8:
@@ -25,7 +19,7 @@ class Chip8:
         self.display = zeros(64 * 32, dtype=uint8)
         self.draw_flag = False
         self.memory = insert(
-            self.memory, 0x0, fromfile('font_set', dtype=uint8), axis=0
+            self.memory, 0x0, fromfile("font_set", dtype=uint8), axis=0
         )
 
     def load_rom(self, rom):
@@ -43,15 +37,19 @@ class Chip8:
 
     def emulate_cycle(self):
         def nnn(opcode):
-             return self.opcode & 0X0FFF
+            return self.opcode & 0x0FFF
+
         def nn(opcode):
             return self.opcode & 0x00FF
+
         def n(opcode):
             return self.opcode & 0x000F
+
         def x(opcode):
-            return ((self.opcode & 0x0F00) >> uint8(8))
+            return (self.opcode & 0x0F00) >> uint8(8)
+
         def y(opcode):
-            return ((self.opcode & 0x00F0) >> uint8(4))
+            return (self.opcode & 0x00F0) >> uint8(4)
 
         self.opcode = (
             self.memory[self.pc] << uint16(8) | self.memory[self.pc + uint16(1)]
@@ -161,7 +159,9 @@ class Chip8:
                 x_line = uint16(0)
                 while x_line < uint16(8):
                     if (pixel & (uint8(0x80) >> x_line)) != uint8(0):
-                        if self.display[x + x_line + ((y + y_line) * uint8(64))] == uint8(1):
+                        if self.display[
+                            x + x_line + ((y + y_line) * uint8(64))
+                        ] == uint8(1):
                             self.v[0xF] = uint8(0x1)
                         self.display[x + x_line + ((y + y_line) * uint8(64))] ^= uint8(1)
                     x_line += uint16(1)

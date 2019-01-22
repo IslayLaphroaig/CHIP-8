@@ -19,7 +19,7 @@ DISPLAY_MODIFIER = 15
 
 def main():
     chip_8 = Chip8()
-    chip_8.load_rom('roms/PONG')
+    chip_8.load_rom("roms/PONG")
 
     def key_callback(window, key, scancode, action, mods):
         def key_1():
@@ -99,9 +99,21 @@ def main():
                     glColor3f(1.0, 1.0, 1.0)
                 glBegin(GL_QUADS)
                 glVertex3f((x * DISPLAY_MODIFIER), (y * DISPLAY_MODIFIER), 0.0)
-                glVertex3f((x * DISPLAY_MODIFIER), (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER, 0.0)
-                glVertex3f((x * DISPLAY_MODIFIER) + DISPLAY_MODIFIER, (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER, 0.0)
-                glVertex3f((x * DISPLAY_MODIFIER) + DISPLAY_MODIFIER, (y * DISPLAY_MODIFIER) + 0.0, 0.0)
+                glVertex3f(
+                    (x * DISPLAY_MODIFIER),
+                    (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
+                    0.0,
+                )
+                glVertex3f(
+                    (x * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
+                    (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
+                    0.0,
+                )
+                glVertex3f(
+                    (x * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
+                    (y * DISPLAY_MODIFIER) + 0.0,
+                    0.0,
+                )
                 glEnd()
 
     if not glfw.init():
