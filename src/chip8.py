@@ -6,15 +6,17 @@ from numpy import (
     uint16, 
     zeros,
 )
+import os
+os.chdir('..')
 
 
 class Chip8:
     def __init__(self):
         self.opcode = uint16(0)
         self.memory = zeros(4096, dtype=uint8)
-        self.V = zeros(16, dtype=uint8)
-        self.I = uint16(0)
-        self.PC = uint16(0x200)
+        self.v = zeros(16, dtype=uint8)
+        self.i = uint16(0)
+        self.pc = uint16(0x200)
         self.stack = zeros(16, dtype=uint16)
         self.stack_pointer = uint16(0)
         self.delay_timer = uint8(0)
@@ -23,7 +25,7 @@ class Chip8:
         self.display = zeros(64 * 32, dtype=uint8)
         self.draw_flag = False
         self.memory = insert(
-            self.memory, 0x0, fromfile("../font_set", dtype=uint8), axis=0
+            self.memory, 0x0, fromfile('font_set', dtype=uint8), axis=0
         )
 
     def load_rom(self, rom):
@@ -40,16 +42,21 @@ class Chip8:
             self.sound_timer -= uint8(1)
 
     def emulate_cycle(self):
-        NNN = lambda opcode: self.opcode & 0x0FFF
-        NN = lambda opcode: self.opcode & 0x00FF
-        N = lambda opcode: self.opcode & 0x000F
-        X = lambda opcode: ((self.opcode & 0x0F00) >> uint8(8))
-        Y = lambda opcode: ((self.opcode & 0x00F0) >> uint8(4))
+        def nnn(opcode):
+             return self.opcode & 0X0FFF
+        def nn(opcode):
+            return self.opcode & 0x00FF
+        def n(opcode):
+            return self.opcode & 0x000F
+        def x(opcode):
+            return ((self.opcode & 0x0F00) >> uint8(8))
+        def y(opcode):
+            return ((self.opcode & 0x00F0) >> uint8(4))
 
         self.opcode = (
-            self.memory[self.PC] << uint16(8) | self.memory[self.PC + uint16(1)]
+            self.memory[self.pc] << uint16(8) | self.memory[self.pc + uint16(1)]
         )
-        self.PC += uint16(2)
+        self.pc += uint16(2)
 
         if self.opcode == 0x00E0:
             self.display.fill(uint8(0))
@@ -57,160 +64,160 @@ class Chip8:
 
         elif self.opcode == 0x00EE:
             self.stack_pointer -= uint16(1)
-            self.PC = self.stack[self.stack_pointer]
+            self.pc = self.stack[self.stack_pointer]
 
         elif self.opcode & 0xF000 == 0x1000:
-            self.PC = NNN(self.opcode)
+            self.pc = nnn(self.opcode)
 
         elif self.opcode & 0xF000 == 0x2000:
-            self.stack[self.stack_pointer] = self.PC
+            self.stack[self.stack_pointer] = self.pc
             self.stack_pointer += uint16(1)
-            self.PC = NNN(self.opcode)
+            self.pc = nnn(self.opcode)
 
         elif self.opcode & 0xF000 == 0x3000:
-            if self.V[X(self.opcode)] == NN(self.opcode):
-                self.PC += uint16(2)
+            if self.v[x(self.opcode)] == nn(self.opcode):
+                self.pc += uint16(2)
 
         elif self.opcode & 0xF000 == 0x4000:
-            if not self.V[X(self.opcode)] == NN(self.opcode):
-                self.PC += uint16(2)
+            if not self.v[x(self.opcode)] == nn(self.opcode):
+                self.pc += uint16(2)
 
         elif self.opcode & 0xF000 == 0x5000:
-            if not self.V[X(self.opcode)] == NN(self.opcode):
-                self.PC += uint16(2)
+            if not self.v[x(self.opcode)] == nn(self.opcode):
+                self.pc += uint16(2)
 
         elif self.opcode & 0xF000 == 0x6000:
-            self.V[X(self.opcode)] = NN(self.opcode)
+            self.v[x(self.opcode)] = nn(self.opcode)
 
         elif self.opcode & 0xF000 == 0x7000:
-            self.V[X(self.opcode)] += NN(self.opcode)
+            self.v[x(self.opcode)] += nn(self.opcode)
 
         elif self.opcode & 0xF00F == 0x8000:
-            self.V[X(self.opcode)] = self.V[Y(self.opcode)]
+            self.v[x(self.opcode)] = self.v[y(self.opcode)]
 
         elif self.opcode & 0xF00F == 0x8001:
-            self.V[X(self.opcode)] = self.V[X(self.opcode)] | self.V[Y(self.opcode)]
+            self.v[x(self.opcode)] = self.v[x(self.opcode)] | self.v[y(self.opcode)]
 
         elif self.opcode & 0xF00F == 0x8002:
-            self.V[X(self.opcode)] = self.V[X(self.opcode)] & self.V[Y(self.opcode)]
+            self.v[x(self.opcode)] = self.v[x(self.opcode)] & self.v[y(self.opcode)]
 
         elif self.opcode & 0xF00F == 0x8003:
-            self.V[X(self.opcode)] = self.V[X(self.opcode)] ^ self.V[Y(self.opcode)]
+            self.v[x(self.opcode)] = self.v[x(self.opcode)] ^ self.v[y(self.opcode)]
 
         elif self.opcode & 0xF00F == 0x8004:
-            self.V[0xF] = uint8(0)
-            total = uint16(self.V[X(self.opcode)]) + uint16(self.V[Y(self.opcode)])
+            self.v[0xF] = uint8(0)
+            total = uint16(self.v[x(self.opcode)]) + uint16(self.v[y(self.opcode)])
             if total > uint16(255):
-                self.V[0xF] = uint8(1)
+                self.v[0xF] = uint8(1)
                 total -= uint16(256)
-            self.V[X(self.opcode)] = uint16(total)
+            self.v[x(self.opcode)] = uint16(total)
 
         elif self.opcode & 0xF00F == 0x8005:
-            self.V[0xF] = uint8(1)
-            difference = uint16(self.V[X(self.opcode)]) - uint16(self.V[Y(self.opcode)])
+            self.v[0xF] = uint8(1)
+            difference = uint16(self.v[x(self.opcode)]) - uint16(self.v[y(self.opcode)])
             if difference < uint8(0):
-                self.V[0xF] = uint8(0)
+                self.v[0xF] = uint8(0)
                 difference += uint8(256)
-            self.V[X(self.opcode)] = uint16(difference)
+            self.v[x(self.opcode)] = uint16(difference)
 
         elif self.opcode & 0xF00F == 0x8006:
-            self.V[0xF] = self.V[X(self.opcode)] & uint8(1)
-            self.V[X(self.opcode)] = self.V[X(self.opcode)] >> uint8(1)
+            self.v[0xF] = self.v[x(self.opcode)] & uint8(1)
+            self.v[x(self.opcode)] = self.v[x(self.opcode)] >> uint8(1)
 
         elif self.opcode & 0xF00F == 0x8007:
-            self.V[0xF] = uint8(1)
-            difference = uint16(self.V[Y(self.opcode)]) - uint16(self.V[X(self.opcode)])
+            self.v[0xF] = uint8(1)
+            difference = uint16(self.v[y(self.opcode)]) - uint16(self.v[x(self.opcode)])
             if difference < uint8(0):
-                self.V[0xF] = uint8(0)
+                self.v[0xF] = uint8(0)
                 difference += uint8(256)
-            self.V[X(self.opcode)] = uint16(difference)
+            self.v[x(self.opcode)] = uint16(difference)
 
         elif self.opcode & 0xF00F == 0x800E:
-            self.V[0xF] = (self.V[X(self.opcode)] >> uint8(7)) & uint8(1)
-            self.V[X(self.opcode)] = self.V[X(self.opcode)] << uint8(1)
+            self.v[0xF] = (self.v[x(self.opcode)] >> uint8(7)) & uint8(1)
+            self.v[x(self.opcode)] = self.v[x(self.opcode)] << uint8(1)
 
         elif self.opcode & 0xF000 == 0x9000:
-            if not self.V[X(self.opcode)] == self.V[Y(self.opcode)]:
-                self.PC += 2
+            if not self.v[x(self.opcode)] == self.v[x(self.opcode)]:
+                self.pc += 2
 
         elif self.opcode & 0xF000 == 0xA000:
-            self.I = NNN(self.opcode)
+            self.i = nnn(self.opcode)
 
         elif self.opcode & 0xF000 == 0xB000:
-            self.PC = NNN(self.opcode) + self.V[0x0]
+            self.pc = nnn(self.opcode) + self.v[0x0]
 
         elif self.opcode & 0xF000 == 0xC000:
-            random.randint(0, 255, dtype=uint8) & NN(self.opcode)
+            random.randint(0, 255, dtype=uint8) & nn(self.opcode)
 
         elif self.opcode & 0xF000 == 0xD000:
-            x = self.V[X(self.opcode)]
-            y = self.V[Y(self.opcode)]
-            height = N(self.opcode)
-            self.V[0xF] = uint8(0)
-            yline = uint16(0)
+            x = self.v[x(self.opcode)]
+            y = self.v[y(self.opcode)]
+            height = n(self.opcode)
+            self.v[0xF] = uint8(0)
+            y_line = uint16(0)
 
-            while yline < height:
-                pixel = self.memory[self.I + yline]
-                xline = uint16(0)
-                while xline < uint16(8):
-                    if (pixel & (uint8(0x80) >> xline)) != uint8(0):
-                        if self.display[x + xline + ((y + yline) * uint8(64))] == uint8(1):
-                            self.V[0xF] = uint8(0x1)
-                        self.display[x + xline + ((y + yline) * uint8(64))] ^= uint8(1)
-                    xline += uint16(1)
-                yline += uint16(1)
+            while y_line < height:
+                pixel = self.memory[self.i + y_line]
+                x_line = uint16(0)
+                while x_line < uint16(8):
+                    if (pixel & (uint8(0x80) >> x_line)) != uint8(0):
+                        if self.display[x + x_line + ((y + y_line) * uint8(64))] == uint8(1):
+                            self.v[0xF] = uint8(0x1)
+                        self.display[x + x_line + ((y + y_line) * uint8(64))] ^= uint8(1)
+                    x_line += uint16(1)
+                y_line += uint16(1)
             self.draw_flag = True
 
         elif self.opcode & 0xF0FF == 0xE09E:
-            if self.keys[self.V[X(self.opcode)]] == uint8(1):
-                self.PC += uint16(2)
+            if self.keys[self.v[x(self.opcode)]] == uint8(1):
+                self.pc += uint16(2)
 
         elif self.opcode & 0xF0FF == 0xE0A1:
-            if not self.keys[self.V[X(self.opcode)]] == uint8(1):
-                self.PC += uint16(2)
+            if not self.keys[self.v[x(self.opcode)]] == uint8(1):
+                self.pc += uint16(2)
 
         elif self.opcode & 0xF0FF == 0xF007:
-            self.V[X(self.opcode)] = self.delay_timer
+            self.v[x(self.opcode)] = self.delay_timer
 
         elif self.opcode & 0xF0FF == 0xF00A:
             key_pressed = False
             index = uint8(0)
             while index < uint8(16):
                 if self.keys[index] == uint8(1):
-                    self.V[X(self.opcode)] = index
+                    self.v[x(self.opcode)] = index
                     key_pressed = True
             if not key_pressed:
-                self.PC += uint16(2)
+                self.pc += uint16(2)
 
         elif self.opcode & 0xF0FF == 0xF015:
-            self.delay_timer = self.V[X(self.opcode)]
+            self.delay_timer = self.v[x(self.opcode)]
 
         elif self.opcode & 0xF0FF == 0xF018:
-            self.sound_timer = self.V[X(self.opcode)]
+            self.sound_timer = self.v[x(self.opcode)]
 
         elif self.opcode & 0xF0FF == 0xF01E:
-            self.I += self.V[X(self.opcode)]
+            self.i += self.v[x(self.opcode)]
 
         elif self.opcode & 0xF0FF == 0xF029:
-            self.I = uint16(5) * self.V[X(self.opcode)]
+            self.i = uint16(5) * self.v[x(self.opcode)]
 
         elif self.opcode & 0xF0FF == 0xF033:
-            self.memory[self.I] = self.V[X(self.opcode)] / uint8(100)
-            self.memory[self.I + uint16(1)] = (
-                self.V[X(self.opcode)] / uint8(10)
+            self.memory[self.i] = self.v[x(self.opcode)] / uint8(100)
+            self.memory[self.i + uint16(1)] = (
+                self.v[x(self.opcode)] / uint8(10)
             ) % uint8(10)
-            self.memory[self.I + uint16(2)] = self.V[X(self.opcode)] % uint8(10)
+            self.memory[self.i + uint16(2)] = self.v[x(self.opcode)] % uint8(10)
 
         elif self.opcode & 0xF0FF == 0xF055:
             index = uint16(0)
-            while index <= X(self.opcode):
-                self.memory[self.I + index] = self.V[index]
+            while index <= x(self.opcode):
+                self.memory[self.i + index] = self.v[index]
                 index += uint16(1)
 
         elif self.opcode & 0xF0FF == 0xF065:
             index = uint16(0)
-            while index <= X(self.opcode):
-                self.V[index] = self.memory[self.I + index]
+            while index <= x(self.opcode):
+                self.v[index] = self.memory[self.i + index]
                 index += uint16(1)
 
         else:

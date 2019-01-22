@@ -14,12 +14,12 @@ from chip8 import Chip8
 
 WIDTH = 64
 HEIGHT = 32
-MODIFIER = 15
+DISPLAY_MODIFIER = 15
 
 
 def main():
     chip_8 = Chip8()
-    chip_8.load_rom("../roms/PONG")
+    chip_8.load_rom('roms/PONG')
 
     def key_callback(window, key, scancode, action, mods):
         def key_1():
@@ -34,40 +34,40 @@ def main():
         def key_4():
             chip_8.keys[0x3] = action == glfw.PRESS
 
-        def key_Q():
+        def key_q():
             chip_8.keys[0x4] = action == glfw.PRESS
 
-        def key_W():
+        def key_w():
             chip_8.keys[0x5] = action == glfw.PRESS
 
-        def key_E():
+        def key_e():
             chip_8.keys[0x6] = action == glfw.PRESS
 
-        def key_R():
+        def key_r():
             chip_8.keys[0x7] = action == glfw.PRESS
 
-        def key_A():
+        def key_a():
             chip_8.keys[0x8] = action == glfw.PRESS
 
-        def key_S():
+        def key_s():
             chip_8.keys[0x9] = action == glfw.PRESS
 
-        def key_D():
+        def key_d():
             chip_8.keys[0xA] = action == glfw.PRESS
 
-        def key_F():
+        def key_f():
             chip_8.keys[0xB] = action == glfw.PRESS
 
-        def key_Z():
+        def key_z():
             chip_8.keys[0xC] = action == glfw.PRESS
 
-        def key_X():
+        def key_x():
             chip_8.keys[0xD] = action == glfw.PRESS
 
-        def key_C():
+        def key_c():
             chip_8.keys[0xE] = action == glfw.PRESS
 
-        def key_V():
+        def key_v():
             chip_8.keys[0xF] = action == glfw.PRESS
 
         return {
@@ -75,18 +75,18 @@ def main():
             glfw.KEY_2: key_2,
             glfw.KEY_3: key_3,
             glfw.KEY_4: key_4,
-            glfw.KEY_Q: key_Q,
-            glfw.KEY_W: key_W,
-            glfw.KEY_E: key_E,
-            glfw.KEY_R: key_R,
-            glfw.KEY_A: key_A,
-            glfw.KEY_S: key_S,
-            glfw.KEY_D: key_D,
-            glfw.KEY_F: key_F,
-            glfw.KEY_Z: key_Z,
-            glfw.KEY_X: key_X,
-            glfw.KEY_C: key_C,
-            glfw.KEY_V: key_V,
+            glfw.KEY_Q: key_q,
+            glfw.KEY_W: key_w,
+            glfw.KEY_E: key_e,
+            glfw.KEY_R: key_r,
+            glfw.KEY_A: key_a,
+            glfw.KEY_S: key_s,
+            glfw.KEY_D: key_d,
+            glfw.KEY_F: key_f,
+            glfw.KEY_Z: key_z,
+            glfw.KEY_X: key_x,
+            glfw.KEY_C: key_c,
+            glfw.KEY_V: key_v,
         }.get(key, lambda: None)()
 
     def draw():
@@ -98,17 +98,17 @@ def main():
                 else:
                     glColor3f(1.0, 1.0, 1.0)
                 glBegin(GL_QUADS)
-                glVertex3f((x * MODIFIER), (y * MODIFIER), 0.0)
-                glVertex3f((x * MODIFIER), (y * MODIFIER) + MODIFIER, 0.0)
-                glVertex3f((x * MODIFIER) + MODIFIER, (y * MODIFIER) + MODIFIER, 0.0)
-                glVertex3f((x * MODIFIER) + MODIFIER, (y * MODIFIER) + 0.0, 0.0)
+                glVertex3f((x * DISPLAY_MODIFIER), (y * DISPLAY_MODIFIER), 0.0)
+                glVertex3f((x * DISPLAY_MODIFIER), (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER, 0.0)
+                glVertex3f((x * DISPLAY_MODIFIER) + DISPLAY_MODIFIER, (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER, 0.0)
+                glVertex3f((x * DISPLAY_MODIFIER) + DISPLAY_MODIFIER, (y * DISPLAY_MODIFIER) + 0.0, 0.0)
                 glEnd()
 
     if not glfw.init():
         return
 
     window = glfw.create_window(
-        WIDTH * MODIFIER, HEIGHT * MODIFIER, "CHIP-8", None, None
+        WIDTH * DISPLAY_MODIFIER, HEIGHT * DISPLAY_MODIFIER, "CHIP-8", None, None
     )
 
     if not window:
@@ -118,13 +118,13 @@ def main():
     glfw.set_key_callback(window, key_callback)
     glfw.make_context_current(window)
     glfw.swap_interval(0)
-    gluOrtho2D(0, (WIDTH * MODIFIER), (HEIGHT * MODIFIER), 0)
+    gluOrtho2D(0, (WIDTH * DISPLAY_MODIFIER), (HEIGHT * DISPLAY_MODIFIER), 0)
 
     while not glfw.window_should_close(window):
         chip_8.update_timers()
         if not chip_8.emulate_cycle():
             break
-        if chip_8.draw_flag == True:
+        if chip_8.draw_flag:
             draw()
             chip_8.draw_flag = False
         glfw.swap_buffers(window)
