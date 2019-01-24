@@ -94,33 +94,31 @@ def main():
 
     def draw():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glColor3f(1.0, 1.0, 1.0)
         for y in range(32):
             for x in range(64):
-                if chip_8.display[x + (64 * y)] == 0:
-                    glColor3f(0.0, 0.0, 0.0)
-                else:
-                    glColor3f(1.0, 1.0, 1.0)
-                glBegin(GL_QUADS)
-                glVertex3f(
-                    (x * DISPLAY_MODIFIER), 
-                    (y * DISPLAY_MODIFIER), 
-                    0.0,)
-                glVertex3f(
-                    (x * DISPLAY_MODIFIER),
-                    (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
-                    0.0,
-                )
-                glVertex3f(
-                    (x * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
-                    (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
-                    0.0,
-                )
-                glVertex3f(
-                    (x * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
-                    (y * DISPLAY_MODIFIER) + 0.0,
-                    0.0,
-                )
-                glEnd()
+                if chip_8.display[x + (64 * y)] == 1:
+                    glBegin(GL_QUADS)
+                    glVertex3f(
+                        (x * DISPLAY_MODIFIER), 
+                        (y * DISPLAY_MODIFIER), 
+                        0.0,)
+                    glVertex3f(
+                        (x * DISPLAY_MODIFIER),
+                        (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
+                        0.0,
+                    )
+                    glVertex3f(
+                        (x * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
+                        (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
+                        0.0,
+                    )
+                    glVertex3f(
+                        (x * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
+                        (y * DISPLAY_MODIFIER) + 0.0,
+                        0.0,
+                    )
+                    glEnd()
 
     if not glfw.init():
         return
@@ -139,13 +137,15 @@ def main():
     gluOrtho2D(0, (WIDTH * DISPLAY_MODIFIER), (HEIGHT * DISPLAY_MODIFIER), 0)
 
     while not glfw.window_should_close(window):
-        chip_8.update_timers()
-        if not chip_8.cycle():
-            break
-        if chip_8.draw_flag:
-            draw()
-            chip_8.draw_flag = False
-        glfw.swap_buffers(window)
+        while chip_8.draw_flag != True:
+            chip_8.update_timers()
+            if not chip_8.cycle():
+                chip_8.draw_flag = True
+                break
+            if chip_8.draw_flag:
+                draw()
+                glfw.swap_buffers(window)
+        chip_8.draw_flag = False
         glfw.poll_events()
     glfw.terminate()
 

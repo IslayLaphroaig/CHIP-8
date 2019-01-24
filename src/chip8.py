@@ -53,109 +53,75 @@ class Chip8:
 
         def y(opcode):
             return (opcode & 0x00F0) >> uint8(4)
-
+        
         def bitwise(opcode):
             if opcode == 0x00E0:
-                print("0x00E0")
                 return 0x00E0
             elif opcode == 0x00EE:
-                print("0X00EE")
                 return 0x00EE
             elif opcode & 0xF000 == 0x1000:
-                print("0x1000")
                 return 0x1000
             elif opcode & 0xF000 == 0x2000:
-                print("0x2000")
                 return 0x2000
             elif opcode & 0xF000 == 0x3000:
-                print("0x3000")
                 return 0x3000
             elif opcode & 0xF000 == 0x4000:
-                print("0x4000")
                 return 0x4000
             elif opcode & 0xF000 == 0x5000:
-                print("0x5000")
                 return 0x5000
             elif opcode & 0xF000 == 0x6000:
-                print("0x6000")
                 return 0x6000
             elif opcode & 0xF000 == 0x7000:
-                print("0x7000")
                 return 0x7000
             elif opcode & 0xF00F == 0x8000:
-                print("0x8000")
                 return 0x8000
             elif opcode & 0xF00F == 0x8001:
-                print("0x8001")
                 return 0x8001
             elif opcode & 0xF00F == 0x8002:
-                print("0x8002")
                 return 0x8002
             elif opcode & 0xF00F == 0x8003:
-                print("0x8003")
                 return 0x8003
             elif opcode & 0xF00F == 0x8004:
-                print("0x8004")
                 return 0x8004
             elif opcode & 0xF00F == 0x8005:
-                print("0x8005")
                 return 0x8005
             elif opcode & 0xF00F == 0x8006:
-                print("0x8006")
                 return 0x8006
             elif opcode & 0xF00F == 0x8007:
-                print("0x8007")
                 return 0x8007
             elif opcode & 0xF00F == 0x800E:
-                print("0x800E")
                 return 0x800E
             elif opcode & 0xF000 == 0x9000:
-                print("0x9000")
                 return 0x9000
             elif opcode & 0xF000 == 0xA000:
-                print("0xA000")
                 return 0xA000
             elif opcode & 0xF000 == 0xB000:
-                print("0xB000")
                 return 0xB000
             elif opcode & 0xF000 == 0xC000:
-                print("0xC000")
                 return 0xC000
             elif opcode & 0xF000 == 0xD000:
-                print("0xD000")
                 return 0xD000
             elif opcode & 0xF0FF == 0xE09E:
-                print("0xE09E")
                 return 0xE09E
             elif opcode & 0xF0FF == 0xE0A1:
-                print("0xE0A1")
                 return 0xE0A1
             elif opcode & 0xF0FF == 0xF007:
-                print("0xF007")
                 return 0xF007
             elif opcode & 0xF0FF == 0xF00A:
-                print("0xF00A")
                 return 0xF00A
             elif opcode & 0xF0FF == 0xF015:
-                print("0xF015")
                 return 0xF015
             elif opcode & 0xF0FF == 0xF018:
-                print("0xF018")
                 return 0xF018
             elif opcode & 0xF0FF == 0xF01E:
-                print("0xF01E")
                 return 0xF01E
             elif opcode & 0xF0FF == 0xF029:
-                print("0xF029")
                 return 0xF029
             elif opcode & 0xF0FF == 0xF033:
-                print("0xF033")
                 return 0xF033
             elif opcode & 0xF0FF == 0xF055:
-                print("0xF055")
                 return 0xF055
             elif opcode & 0xF0FF == 0xF065:
-                print("0xF065")
                 return 0xF065
             else:
                 return False
@@ -326,7 +292,7 @@ class Chip8:
                 self.v[index] = self.memory[self.i + index]
                 index += uint16(1)
 
-        def dictionary(bitwise_opcode):
+        def opcode_dictionary(bitwise_opcode):
             return {
                 0x00E0: clear_screen,
                 0x00EE: return_from_subroutine,
@@ -365,6 +331,6 @@ class Chip8:
             }.get(bitwise_opcode, lambda: None)()
 
         self.bitwise_opcode = bitwise(self.opcode)
-        dictionary(self.bitwise_opcode)
+        opcode_dictionary(self.bitwise_opcode)
 
         return True
