@@ -137,7 +137,7 @@ def main():
     gluOrtho2D(0, (WIDTH * DISPLAY_MODIFIER), (HEIGHT * DISPLAY_MODIFIER), 0)
 
     while not glfw.window_should_close(window):
-        while chip_8.draw_flag != True:
+        while not chip_8.draw_flag:
             chip_8.update_timers()
             if not chip_8.cycle():
                 chip_8.draw_flag = True
