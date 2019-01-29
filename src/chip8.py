@@ -162,11 +162,11 @@ class Chip8:
             while x_line < uint16(8):
                 if (pixel & (uint8(0x80) >> x_line)) != uint8(0):
                     if self.display[
-                        x_cord + x_line + ((y_cord + y_line) * uint8(64))
+                        ((x_cord + x_line) % uint8(64)) + (((y_cord + y_line) % uint8(32)) * uint8(64))
                     ] == uint8(1):
                         self.v[0xF] = uint8(0x1)
                     self.display[
-                        x_cord + x_line + ((y_cord + y_line) * uint8(64))
+                        ((x_cord + x_line) % uint8(64)) + (((y_cord + y_line) % uint8(32)) * uint8(64))
                     ] ^= uint8(1)
                 x_line += uint16(1)
             y_line += uint16(1)
