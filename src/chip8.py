@@ -1,5 +1,8 @@
 from numpy import fromfile, insert, int16, random, uint8, uint16, zeros
 
+DISPLAY_HEIGHT = 32
+DISPLAY_WIDTH = 64
+
 
 class Chip8:
     def __init__(self):
@@ -162,11 +165,19 @@ class Chip8:
             while x_line < uint16(8):
                 if (pixel & (uint8(0x80) >> x_line)) != uint8(0):
                     if self.display[
-                        ((x_cord + x_line) % uint8(64)) + (((y_cord + y_line) % uint8(32)) * uint8(64))
+                        ((x_cord + x_line) % uint8(DISPLAY_WIDTH))
+                        + (
+                            ((y_cord + y_line) % uint8(DISPLAY_HEIGHT))
+                            * uint8(DISPLAY_WIDTH)
+                        )
                     ] == uint8(1):
                         self.v[0xF] = uint8(0x1)
                     self.display[
-                        ((x_cord + x_line) % uint8(64)) + (((y_cord + y_line) % uint8(32)) * uint8(64))
+                        ((x_cord + x_line) % uint8(DISPLAY_WIDTH))
+                        + (
+                            ((y_cord + y_line) % uint8(DISPLAY_HEIGHT))
+                            * uint8(DISPLAY_WIDTH)
+                        )
                     ] ^= uint8(1)
                 x_line += uint16(1)
             y_line += uint16(1)
@@ -191,7 +202,7 @@ class Chip8:
                 self.v[self.x(self.opcode)] = index
                 key_pressed = True
         if not key_pressed:
-            self.pc += uint16(2)
+            self.pc -= uint16(2)
 
     def set_delay_timer_to_vx(self):
         self.delay_timer = self.v[self.x(self.opcode)]

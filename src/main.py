@@ -14,8 +14,8 @@ from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 from chip8 import Chip8
 
-WIDTH = 64
-HEIGHT = 32
+DISPLAY_HEIGHT = 32
+DISPLAY_WIDTH = 64
 DISPLAY_MODIFIER = 15
 
 
@@ -124,7 +124,7 @@ def main():
         return
 
     window = glfw.create_window(
-        WIDTH * DISPLAY_MODIFIER, HEIGHT * DISPLAY_MODIFIER, "CHIP-8", None, None
+        DISPLAY_WIDTH * DISPLAY_MODIFIER, DISPLAY_HEIGHT * DISPLAY_MODIFIER, "CHIP-8", None, None
     )
 
     if not window:
@@ -134,7 +134,7 @@ def main():
     glfw.set_key_callback(window, key_callback)
     glfw.make_context_current(window)
     glfw.swap_interval(0)
-    gluOrtho2D(0, (WIDTH * DISPLAY_MODIFIER), (HEIGHT * DISPLAY_MODIFIER), 0)
+    gluOrtho2D(0, (DISPLAY_WIDTH * DISPLAY_MODIFIER), (DISPLAY_HEIGHT * DISPLAY_MODIFIER), 0)
 
     while not glfw.window_should_close(window):
         while not chip_8.draw_flag:
