@@ -7,7 +7,8 @@ DISPLAY_WIDTH = 64
 class Chip8:
     def __init__(self):
         self.opcode = uint16(0)
-        self.bitwise_opcode = uint16(0)
+        self.decoded_opcode = uint16(0)
+        self.first_four_bits_of_opcode = uint16(0)
         self.memory = zeros(4096, dtype=uint8)
         self.v = zeros(16, dtype=uint8)
         self.i = uint16(0)
@@ -235,79 +236,55 @@ class Chip8:
             self.v[index] = self.memory[self.i + index]
             index += uint16(1)
 
-    def bitwise(self, opcode):
-        if opcode == 0x00E0:
-            return 0x00E0
-        elif opcode == 0x00EE:
-            return 0x00EE
-        elif opcode & 0xF000 == 0x1000:
-            return 0x1000
-        elif opcode & 0xF000 == 0x2000:
-            return 0x2000
-        elif opcode & 0xF000 == 0x3000:
-            return 0x3000
-        elif opcode & 0xF000 == 0x4000:
-            return 0x4000
-        elif opcode & 0xF000 == 0x5000:
-            return 0x5000
-        elif opcode & 0xF000 == 0x6000:
-            return 0x6000
-        elif opcode & 0xF000 == 0x7000:
-            return 0x7000
-        elif opcode & 0xF00F == 0x8000:
-            return 0x8000
-        elif opcode & 0xF00F == 0x8001:
-            return 0x8001
-        elif opcode & 0xF00F == 0x8002:
-            return 0x8002
-        elif opcode & 0xF00F == 0x8003:
-            return 0x8003
-        elif opcode & 0xF00F == 0x8004:
-            return 0x8004
-        elif opcode & 0xF00F == 0x8005:
-            return 0x8005
-        elif opcode & 0xF00F == 0x8006:
-            return 0x8006
-        elif opcode & 0xF00F == 0x8007:
-            return 0x8007
-        elif opcode & 0xF00F == 0x800E:
-            return 0x800E
-        elif opcode & 0xF000 == 0x9000:
-            return 0x9000
-        elif opcode & 0xF000 == 0xA000:
-            return 0xA000
-        elif opcode & 0xF000 == 0xB000:
-            return 0xB000
-        elif opcode & 0xF000 == 0xC000:
-            return 0xC000
-        elif opcode & 0xF000 == 0xD000:
-            return 0xD000
-        elif opcode & 0xF0FF == 0xE09E:
-            return 0xE09E
-        elif opcode & 0xF0FF == 0xE0A1:
-            return 0xE0A1
-        elif opcode & 0xF0FF == 0xF007:
-            return 0xF007
-        elif opcode & 0xF0FF == 0xF00A:
-            return 0xF00A
-        elif opcode & 0xF0FF == 0xF015:
-            return 0xF015
-        elif opcode & 0xF0FF == 0xF018:
-            return 0xF018
-        elif opcode & 0xF0FF == 0xF01E:
-            return 0xF01E
-        elif opcode & 0xF0FF == 0xF029:
-            return 0xF029
-        elif opcode & 0xF0FF == 0xF033:
-            return 0xF033
-        elif opcode & 0xF0FF == 0xF055:
-            return 0xF055
-        elif opcode & 0xF0FF == 0xF065:
-            return 0xF065
-        else:
-            return False
+    def first_four_bits_dict(self, opcode):
+        return {
+            0x1000: opcode,
+            0x2000: opcode,
+            0x3000: opcode,
+            0x4000: opcode,
+            0x5000: opcode,
+            0x6000: opcode,
+            0x7000: opcode,
+            0x8000: opcode,
+            0x9000: opcode,
+            0xA000: opcode,
+            0xB000: opcode,
+            0xC000: opcode,
+            0xD000: opcode,
+            0xE000: opcode,
+            0xF000: opcode,
+        }.get(opcode, lambda: None)
 
-    def opcode_dictionary(self, bitwise_opcode):
+    def test1_dict(self, opcode):
+        opcode = opcode & 0xF00F
+        return {
+            0x8000: opcode,
+            0x8001: opcode,
+            0x8002: opcode,
+            0x8003: opcode,
+            0x8004: opcode,
+            0x8005: opcode,
+            0x8006: opcode,
+            0x800E: opcode,
+        }.get(opcode, lambda: None)
+
+    def test2_dict(self, opcode):
+        opcode = opcode & 0xF0FF
+        return {
+            0xE09E: opcode,
+            0xE0A1: opcode,
+            0xF007: opcode,
+            0xF00A: opcode,
+            0xF015: opcode,
+            0xF018: opcode,
+            0xF01E: opcode,
+            0xF029: opcode,
+            0xF033: opcode,
+            0xF055: opcode,
+            0xF065: opcode,
+        }.get(opcode, lambda: None)
+
+    def execute_opcode(self, decoded_opcode):
         return {
             0x00E0: self.clear_screen,
             0x00EE: self.return_from_subroutine,
@@ -343,7 +320,25 @@ class Chip8:
             0xF033: self.store_bcd_in_i,
             0xF055: self.store_v0_to_vx_in_memory_from_i,
             0xF065: self.read_v0_to_vx_from_i,
-        }.get(bitwise_opcode, lambda: None)()
+        }.get(decoded_opcode, lambda: None)()
+
+    def decode_opcode(self, opcode):
+        if opcode == 0x00E0:
+            return 0x00E0
+        elif opcode == 0x00EE:
+            return 0x00EE
+
+        self.first_four_bits_of_opcode = opcode & 0xF000
+        test = self.first_four_bits_dict(self.first_four_bits_of_opcode)
+
+        if test == 0x8000:
+            return self.test1_dict(opcode)
+        elif test == 0xE000:
+            return self.test2_dict(opcode)
+        elif test == 0xF000:
+            return self.test2_dict(opcode)
+        else:
+            return self.first_four_bits_of_opcode
 
     def cycle(self):
         self.opcode = (
@@ -351,7 +346,7 @@ class Chip8:
         )
         self.pc += uint16(2)
 
-        self.bitwise_opcode = self.bitwise(self.opcode)
-        self.opcode_dictionary(self.bitwise_opcode)
+        self.decoded_opcode = self.decode_opcode(self.opcode)
+        self.execute_opcode(self.decoded_opcode)
 
         return True
