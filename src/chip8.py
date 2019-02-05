@@ -8,7 +8,6 @@ class Chip8:
     def __init__(self):
         self.opcode = uint16(0)
         self.decoded_opcode = uint16(0)
-        self.first_four_bits_of_opcode = uint16(0)
         self.memory = zeros(4096, dtype=uint8)
         self.v = zeros(16, dtype=uint8)
         self.i = uint16(0)
@@ -236,26 +235,14 @@ class Chip8:
             self.v[index] = self.memory[self.i + index]
             index += uint16(1)
 
-    def first_four_bits_dict(self, opcode):
+    def least_significant_bits(self, opcode):
+        opcode = opcode & 0x000F
         return {
-            0x1000: opcode,
-            0x2000: opcode,
-            0x3000: opcode,
-            0x4000: opcode,
-            0x5000: opcode,
-            0x6000: opcode,
-            0x7000: opcode,
-            0x8000: opcode,
-            0x9000: opcode,
-            0xA000: opcode,
-            0xB000: opcode,
-            0xC000: opcode,
-            0xD000: opcode,
-            0xE000: opcode,
-            0xF000: opcode,
+            0x0000: opcode, 
+            0x000E: opcode
         }.get(opcode, lambda: None)
 
-    def test1_dict(self, opcode):
+    def eightxy0_to_eightxye(self, opcode):
         opcode = opcode & 0xF00F
         return {
             0x8000: opcode,
@@ -268,7 +255,7 @@ class Chip8:
             0x800E: opcode,
         }.get(opcode, lambda: None)
 
-    def test2_dict(self, opcode):
+    def ex9e_to_fx65(self, opcode):
         opcode = opcode & 0xF0FF
         return {
             0xE09E: opcode,
@@ -286,8 +273,8 @@ class Chip8:
 
     def execute_opcode(self, decoded_opcode):
         return {
-            0x00E0: self.clear_screen,
-            0x00EE: self.return_from_subroutine,
+            0x0000: self.clear_screen,
+            0x000E: self.return_from_subroutine,
             0x1000: self.jump_to_nnn,
             0x2000: self.call_subroutine_at_nnn,
             0x3000: self.skip_if_vx_equals_nn,
@@ -323,20 +310,16 @@ class Chip8:
         }.get(decoded_opcode, lambda: None)()
 
     def decode_opcode(self, opcode):
-        if opcode == 0x00E0:
-            return 0x00E0
-        elif opcode == 0x00EE:
-            return 0x00EE
-
         self.first_four_bits_of_opcode = opcode & 0xF000
-        test = self.first_four_bits_dict(self.first_four_bits_of_opcode)
 
-        if test == 0x8000:
-            return self.test1_dict(opcode)
-        elif test == 0xE000:
-            return self.test2_dict(opcode)
-        elif test == 0xF000:
-            return self.test2_dict(opcode)
+        if self.first_four_bits_of_opcode == 0x0000:
+            return self.least_significant_bits(opcode)
+        elif self.first_four_bits_of_opcode == 0x8000:
+            return self.eightxy0_to_eightxye(opcode)
+        elif self.first_four_bits_of_opcode == 0xE000:
+            return self.ex9e_to_fx65(opcode)
+        elif self.first_four_bits_of_opcode == 0xF000:
+            return self.ex9e_to_fx65(opcode)
         else:
             return self.first_four_bits_of_opcode
 
