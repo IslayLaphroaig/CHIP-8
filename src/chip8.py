@@ -102,18 +102,18 @@ class Chip8:
         )
 
     def set_vx_to_vx_plus_vy(self):
-        self.v[0xF] = 0
+        self.v[0xF] = [0x0]
         total = self.v[self.x(self.opcode)] + self.v[self.y(self.opcode)]
         if total > 255:
-            self.v[0xF] = 1
+            self.v[0xF] = [0x1]
             total -= 256
         self.v[self.x(self.opcode)] = total
 
     def set_vx_to_vx_minus_vy(self):
-        self.v[0xF] = 1
+        self.v[0xF] = [0x1]
         difference = self.v[self.x(self.opcode)] - self.v[self.y(self.opcode)]
         if difference < 0:
-            self.v[0xF] = 0
+            self.v[0xF] = [0x0]
             difference += 256
         self.v[self.x(self.opcode)] = difference
 
@@ -122,10 +122,10 @@ class Chip8:
         self.v[self.x(self.opcode)] = self.v[self.x(self.opcode)] >> 1
 
     def set_vx_to_vy_minus_vx(self):
-        self.v[0xF] = 1
+        self.v[0xF] = [0x1]
         difference = self.v[self.y(self.opcode)] - self.v[self.x(self.opcode)]
         if difference < 0:
-            self.v[0xF] = 0
+            self.v[0xF] = [0x0]
             difference += 256
         self.v[self.x(self.opcode)] = difference
 
@@ -150,7 +150,7 @@ class Chip8:
         x_cord = self.v[self.x(self.opcode)]
         y_cord = self.v[self.y(self.opcode)]
         height = self.n(self.opcode)
-        self.v[0xF] = 0
+        self.v[0xF] = [0x0]
         y_line = 0
 
         while y_line < height:
@@ -162,10 +162,9 @@ class Chip8:
                         self.display[
                             ((x_cord + x_line) % DISPLAY_WIDTH)
                             + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)
-                        ]
-                        == 1
+                        ] == 1
                     ):
-                        self.v[0xF] = 1
+                        self.v[0xF] = [0x1]
                     self.display[
                         ((x_cord + x_line) % DISPLAY_WIDTH)
                         + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)

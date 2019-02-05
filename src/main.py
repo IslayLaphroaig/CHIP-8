@@ -100,7 +100,11 @@ def main():
             for x in range(64):
                 if chip_8.display[x + (64 * y)] == 1:
                     glBegin(GL_QUADS)
-                    glVertex3f((x * DISPLAY_MODIFIER), (y * DISPLAY_MODIFIER), 0.0)
+                    glVertex3f(
+                        (x * DISPLAY_MODIFIER), 
+                        (y * DISPLAY_MODIFIER), 
+                        0.0,
+                    )
                     glVertex3f(
                         (x * DISPLAY_MODIFIER),
                         (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,

@@ -8,7 +8,7 @@
 ---
 
 ## Description
-This project is a CHIP-8 interpretor written in Python 3. The goal of this project is to learn about the process of writing an interpreter/emulator while simultaneously learning about the Python programming language. The project is a work in progress and is not currently complete.
+This project is a CHIP-8 interpretor written in Python 3. The goal is to learn about the process of writing an interpreter/emulator while simultaneously learning about the Python programming language. The project is a work in progress and is not currently complete.
 
 ## References
 
