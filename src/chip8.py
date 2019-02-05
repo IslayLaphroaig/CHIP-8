@@ -7,6 +7,7 @@ DISPLAY_WIDTH = 64
 class Chip8:
     def __init__(self):
         self.opcode = 0
+        self.first_four_bits_of_opcode = 0
         self.decoded_opcode = 0
         self.memory = [0] * 4096
         self.v = [0] * 16
@@ -21,7 +22,7 @@ class Chip8:
         self.draw_flag = False
 
     def load_data(self, file, offset):
-        data = open(file, 'rb').read()
+        data = open(file, "rb").read()
         for index, byte in enumerate(data):
             self.memory[offset + index] = byte
 
@@ -157,9 +158,18 @@ class Chip8:
             x_line = 0
             while x_line < 8:
                 if (pixel & (128 >> x_line)) != 0:
-                    if (self.display[((x_cord + x_line) % DISPLAY_WIDTH) + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)] == 1):
+                    if (
+                        self.display[
+                            ((x_cord + x_line) % DISPLAY_WIDTH)
+                            + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)
+                        ]
+                        == 1
+                    ):
                         self.v[0xF] = 1
-                    self.display[((x_cord + x_line) % DISPLAY_WIDTH) + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)] ^= 1
+                    self.display[
+                        ((x_cord + x_line) % DISPLAY_WIDTH)
+                        + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)
+                    ] ^= 1
                 x_line += 1
             y_line += 1
         self.draw_flag = True
@@ -216,7 +226,10 @@ class Chip8:
 
     def least_significant_bits(self, opcode):
         opcode = opcode & 0x000F
-        return {0x0000: opcode, 0x000E: opcode}.get(opcode, lambda: None)
+        return {
+            0x0000: opcode,
+            0x000E: opcode
+        }.get(opcode, lambda: None)
 
     def eightxy0_to_eightxye(self, opcode):
         opcode = opcode & 0xF00F
@@ -287,17 +300,12 @@ class Chip8:
 
     def decode_opcode(self, opcode):
         self.first_four_bits_of_opcode = opcode & 0xF000
-
-        if self.first_four_bits_of_opcode == 0x0000:
-            return self.least_significant_bits(opcode)
-        elif self.first_four_bits_of_opcode == 0x8000:
-            return self.eightxy0_to_eightxye(opcode)
-        elif self.first_four_bits_of_opcode == 0xE000:
-            return self.ex9e_to_fx65(opcode)
-        elif self.first_four_bits_of_opcode == 0xF000:
-            return self.ex9e_to_fx65(opcode)
-        else:
-            return self.first_four_bits_of_opcode
+        return {
+            0x0000: self.least_significant_bits(opcode),
+            0x8000: self.eightxy0_to_eightxye(opcode),
+            0xE000: self.ex9e_to_fx65(opcode),
+            0xF000: self.ex9e_to_fx65(opcode),
+        }.get(self.first_four_bits_of_opcode, self.first_four_bits_of_opcode)
 
     def cycle(self):
         self.opcode = self.memory[self.pc] << 8 | self.memory[self.pc + 1]
