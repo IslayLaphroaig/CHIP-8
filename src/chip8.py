@@ -1,4 +1,4 @@
-from numpy import fromfile, insert, int16, random, uint8, uint16, zeros
+from random import random
 
 DISPLAY_HEIGHT = 32
 DISPLAY_WIDTH = 64
@@ -6,33 +6,31 @@ DISPLAY_WIDTH = 64
 
 class Chip8:
     def __init__(self):
-        self.opcode = uint16(0)
-        self.decoded_opcode = uint16(0)
-        self.memory = zeros(4096, dtype=uint8)
-        self.v = zeros(16, dtype=uint8)
-        self.i = uint16(0)
-        self.pc = uint16(0x200)
-        self.stack = zeros(16, dtype=uint16)
-        self.stack_pointer = uint16(0)
-        self.delay_timer = uint8(0)
-        self.sound_timer = uint8(0)
-        self.keys = zeros(16, dtype=uint8)
-        self.display = zeros(64 * 32, dtype=uint8)
+        self.opcode = 0
+        self.decoded_opcode = 0
+        self.memory = [0] * 4096
+        self.v = [0] * 16
+        self.i = 0
+        self.pc = 512
+        self.stack = [0] * 16
+        self.stack_pointer = 0
+        self.delay_timer = 0
+        self.sound_timer = 0
+        self.keys = [0] * 16
+        self.display = [0] * (64 * 32)
         self.draw_flag = False
-        self.memory = insert(
-            self.memory, 0x0, fromfile("font_set", dtype=uint8), axis=0
-        )
 
-    def load_rom(self, rom):
-        data = fromfile(rom, dtype=uint8)
-        self.memory = insert(self.memory, 0x200, data, axis=0)
+    def load_data(self, file, offset):
+        data = open(file, 'rb').read()
+        for index, byte in enumerate(data):
+            self.memory[offset + index] = byte
 
     def update_timers(self):
-        if self.delay_timer > uint8(0):
-            self.delay_timer -= uint8(1)
+        if self.delay_timer > 0:
+            self.delay_timer -= 1
 
-        if self.sound_timer > uint8(0):
-            self.sound_timer -= uint8(1)
+        if self.sound_timer > 0:
+            self.sound_timer -= 1
 
     def nnn(self, opcode):
         return opcode & 0x0FFF
@@ -44,17 +42,17 @@ class Chip8:
         return opcode & 0x000F
 
     def x(self, opcode):
-        return (opcode & 0x0F00) >> uint8(8)
+        return (opcode & 0x0F00) >> 8
 
     def y(self, opcode):
-        return (opcode & 0x00F0) >> uint8(4)
+        return (opcode & 0x00F0) >> 4
 
     def clear_screen(self):
-        self.display.fill(uint8(0))
+        self.display = [0] * (64 * 32)
         self.draw_flag = True
 
     def return_from_subroutine(self):
-        self.stack_pointer -= uint16(1)
+        self.stack_pointer -= 1
         self.pc = self.stack[self.stack_pointer]
 
     def jump_to_nnn(self):
@@ -62,26 +60,27 @@ class Chip8:
 
     def call_subroutine_at_nnn(self):
         self.stack[self.stack_pointer] = self.pc
-        self.stack_pointer += uint16(1)
+        self.stack_pointer += 1
         self.pc = self.nnn(self.opcode)
 
     def skip_if_vx_equals_nn(self):
         if self.v[self.x(self.opcode)] == self.nn(self.opcode):
-            self.pc += uint16(2)
+            self.pc += 2
 
     def skip_if_vx_not_equal_to_nn(self):
         if not self.v[self.x(self.opcode)] == self.nn(self.opcode):
-            self.pc += uint16(2)
+            self.pc += 2
 
     def skip_if_vx_equals_vy(self):
         if not self.v[self.x(self.opcode)] == self.nn(self.opcode):
-            self.pc += uint16(2)
+            self.pc += 2
 
     def set_vx_to_nn(self):
         self.v[self.x(self.opcode)] = self.nn(self.opcode)
 
     def set_vx_to_vx_plus_nn(self):
         self.v[self.x(self.opcode)] += self.nn(self.opcode)
+        self.v[self.x(self.opcode)] %= 256
 
     def set_vx_to_vy(self):
         self.v[self.x(self.opcode)] = self.v[self.y(self.opcode)]
@@ -102,42 +101,36 @@ class Chip8:
         )
 
     def set_vx_to_vx_plus_vy(self):
-        self.v[0xF] = uint8(0)
-        total = uint16(self.v[self.x(self.opcode)]) + uint16(
-            self.v[self.y(self.opcode)]
-        )
-        if total > uint16(255):
-            self.v[0xF] = uint8(1)
-            total -= uint16(256)
-        self.v[self.x(self.opcode)] = uint16(total)
+        self.v[0xF] = 0
+        total = self.v[self.x(self.opcode)] + self.v[self.y(self.opcode)]
+        if total > 255:
+            self.v[0xF] = 1
+            total -= 256
+        self.v[self.x(self.opcode)] = total
 
     def set_vx_to_vx_minus_vy(self):
-        self.v[0xF] = uint8(1)
-        difference = int16(self.v[self.x(self.opcode)]) - int16(
-            self.v[self.y(self.opcode)]
-        )
-        if difference < uint16(0):
-            self.v[0xF] = uint8(0)
-            difference += uint16(256)
-        self.v[self.x(self.opcode)] = uint16(difference)
+        self.v[0xF] = 1
+        difference = self.v[self.x(self.opcode)] - self.v[self.y(self.opcode)]
+        if difference < 0:
+            self.v[0xF] = 0
+            difference += 256
+        self.v[self.x(self.opcode)] = difference
 
     def set_vx_to_vx_shr_1(self):
-        self.v[0xF] = self.v[self.x(self.opcode)] & uint8(1)
-        self.v[self.x(self.opcode)] = self.v[self.x(self.opcode)] >> uint8(1)
+        self.v[0xF] = self.v[self.x(self.opcode)] & 1
+        self.v[self.x(self.opcode)] = self.v[self.x(self.opcode)] >> 1
 
     def set_vx_to_vy_minus_vx(self):
-        self.v[0xF] = uint8(1)
-        difference = int16(self.v[self.y(self.opcode)]) - int16(
-            self.v[self.x(self.opcode)]
-        )
-        if difference < uint8(0):
-            self.v[0xF] = uint8(0)
-            difference += uint8(256)
-        self.v[self.x(self.opcode)] = uint16(difference)
+        self.v[0xF] = 1
+        difference = self.v[self.y(self.opcode)] - self.v[self.x(self.opcode)]
+        if difference < 0:
+            self.v[0xF] = 0
+            difference += 256
+        self.v[self.x(self.opcode)] = difference
 
     def set_vx_to_vx_shl_1(self):
-        self.v[0xF] = (self.v[self.x(self.opcode)] >> uint8(7)) & uint8(1)
-        self.v[self.x(self.opcode)] = self.v[self.x(self.opcode)] << uint8(1)
+        self.v[0xF] = (self.v[self.x(self.opcode)] >> 7) & 1
+        self.v[self.x(self.opcode)] = self.v[self.x(self.opcode)] << 1
 
     def skip_if_vx_not_equal_vy(self):
         if not self.v[self.x(self.opcode)] == self.v[self.x(self.opcode)]:
@@ -150,59 +143,47 @@ class Chip8:
         self.pc = self.nnn(self.opcode) + self.v[0x0]
 
     def set_vx_to_random_byte_and_nn(self):
-        random.randint(0, 255, dtype=uint8) & self.nn(self.opcode)
+        self.v[self.x(self.opcode)] = int(random() * 256) & self.nn(self.opcode)
 
     def draw_to_display(self):
         x_cord = self.v[self.x(self.opcode)]
         y_cord = self.v[self.y(self.opcode)]
         height = self.n(self.opcode)
-        self.v[0xF] = uint8(0)
-        y_line = uint16(0)
+        self.v[0xF] = 0
+        y_line = 0
 
         while y_line < height:
             pixel = self.memory[self.i + y_line]
-            x_line = uint16(0)
-            while x_line < uint16(8):
-                if (pixel & (uint8(0x80) >> x_line)) != uint8(0):
-                    if self.display[
-                        ((x_cord + x_line) % uint8(DISPLAY_WIDTH))
-                        + (
-                            ((y_cord + y_line) % uint8(DISPLAY_HEIGHT))
-                            * uint8(DISPLAY_WIDTH)
-                        )
-                    ] == uint8(1):
-                        self.v[0xF] = uint8(0x1)
-                    self.display[
-                        ((x_cord + x_line) % uint8(DISPLAY_WIDTH))
-                        + (
-                            ((y_cord + y_line) % uint8(DISPLAY_HEIGHT))
-                            * uint8(DISPLAY_WIDTH)
-                        )
-                    ] ^= uint8(1)
-                x_line += uint16(1)
-            y_line += uint16(1)
+            x_line = 0
+            while x_line < 8:
+                if (pixel & (128 >> x_line)) != 0:
+                    if (self.display[((x_cord + x_line) % DISPLAY_WIDTH) + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)] == 1):
+                        self.v[0xF] = 1
+                    self.display[((x_cord + x_line) % DISPLAY_WIDTH) + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)] ^= 1
+                x_line += 1
+            y_line += 1
         self.draw_flag = True
 
     def skip_if_key_equals_vx(self):
-        if self.keys[self.v[self.x(self.opcode)]] == uint8(1):
-            self.pc += uint16(2)
+        if self.keys[self.v[self.x(self.opcode)]] == 1:
+            self.pc += 2
 
     def skip_if_key_not_equal_to_vx(self):
-        if not self.keys[self.v[self.x(self.opcode)]] == uint8(1):
-            self.pc += uint16(2)
+        if not self.keys[self.v[self.x(self.opcode)]] == 1:
+            self.pc += 2
 
     def set_vx_to_delay_timer(self):
         self.v[self.x(self.opcode)] = self.delay_timer
 
     def store_keypress_in_vx(self):
         key_pressed = False
-        index = uint8(0)
-        while index < uint8(16):
-            if self.keys[index] == uint8(1):
+        index = 0
+        while index < 16:
+            if self.keys[index] == 1:
                 self.v[self.x(self.opcode)] = index
                 key_pressed = True
         if not key_pressed:
-            self.pc -= uint16(2)
+            self.pc -= 2
 
     def set_delay_timer_to_vx(self):
         self.delay_timer = self.v[self.x(self.opcode)]
@@ -214,33 +195,28 @@ class Chip8:
         self.i += self.v[self.x(self.opcode)]
 
     def set_i_to_sprite_location_for_vx(self):
-        self.i = uint16(5) * self.v[self.x(self.opcode)]
+        self.i = 5 * self.v[self.x(self.opcode)]
 
     def store_bcd_in_i(self):
-        self.memory[self.i] = self.v[self.x(self.opcode)] / uint8(100)
-        self.memory[self.i + uint16(1)] = (
-            self.v[self.x(self.opcode)] / uint8(10)
-        ) % uint8(10)
-        self.memory[self.i + uint16(2)] = self.v[self.x(self.opcode)] % uint8(10)
+        self.memory[self.i] = self.v[self.x(self.opcode)] // 100
+        self.memory[self.i + 1] = (self.v[self.x(self.opcode)] // 10) % 10
+        self.memory[self.i + 2] = self.v[self.x(self.opcode)] % 10
 
     def store_v0_to_vx_in_memory_from_i(self):
-        index = uint16(0)
+        index = 0
         while index <= self.x(self.opcode):
             self.memory[self.i + index] = self.v[index]
-            index += uint16(1)
+            index += 1
 
     def read_v0_to_vx_from_i(self):
-        index = uint16(0)
+        index = 0
         while index <= self.x(self.opcode):
             self.v[index] = self.memory[self.i + index]
-            index += uint16(1)
+            index += 1
 
     def least_significant_bits(self, opcode):
         opcode = opcode & 0x000F
-        return {
-            0x0000: opcode, 
-            0x000E: opcode
-        }.get(opcode, lambda: None)
+        return {0x0000: opcode, 0x000E: opcode}.get(opcode, lambda: None)
 
     def eightxy0_to_eightxye(self, opcode):
         opcode = opcode & 0xF00F
@@ -324,12 +300,8 @@ class Chip8:
             return self.first_four_bits_of_opcode
 
     def cycle(self):
-        self.opcode = (
-            self.memory[self.pc] << uint16(8) | self.memory[self.pc + uint16(1)]
-        )
-        self.pc += uint16(2)
-
+        self.opcode = self.memory[self.pc] << 8 | self.memory[self.pc + 1]
+        self.pc += 2
         self.decoded_opcode = self.decode_opcode(self.opcode)
         self.execute_opcode(self.decoded_opcode)
-
         return True

@@ -22,7 +22,8 @@ DISPLAY_MODIFIER = 15
 def main():
     Tk().withdraw()
     chip_8 = Chip8()
-    chip_8.load_rom(askopenfilename())
+    chip_8.load_data("font_set", 0)
+    chip_8.load_data(askopenfilename(), chip_8.pc)
 
     def key_callback(window, key, scancode, action, mods):
         def key_1():
@@ -99,10 +100,7 @@ def main():
             for x in range(64):
                 if chip_8.display[x + (64 * y)] == 1:
                     glBegin(GL_QUADS)
-                    glVertex3f(
-                        (x * DISPLAY_MODIFIER), 
-                        (y * DISPLAY_MODIFIER), 
-                        0.0,)
+                    glVertex3f((x * DISPLAY_MODIFIER), (y * DISPLAY_MODIFIER), 0.0)
                     glVertex3f(
                         (x * DISPLAY_MODIFIER),
                         (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
@@ -124,7 +122,11 @@ def main():
         return
 
     window = glfw.create_window(
-        DISPLAY_WIDTH * DISPLAY_MODIFIER, DISPLAY_HEIGHT * DISPLAY_MODIFIER, "CHIP-8", None, None
+        DISPLAY_WIDTH * DISPLAY_MODIFIER,
+        DISPLAY_HEIGHT * DISPLAY_MODIFIER,
+        "CHIP-8",
+        None,
+        None,
     )
 
     if not window:
@@ -134,7 +136,9 @@ def main():
     glfw.set_key_callback(window, key_callback)
     glfw.make_context_current(window)
     glfw.swap_interval(0)
-    gluOrtho2D(0, (DISPLAY_WIDTH * DISPLAY_MODIFIER), (DISPLAY_HEIGHT * DISPLAY_MODIFIER), 0)
+    gluOrtho2D(
+        0, (DISPLAY_WIDTH * DISPLAY_MODIFIER), (DISPLAY_HEIGHT * DISPLAY_MODIFIER), 0
+    )
 
     while not glfw.window_should_close(window):
         while not chip_8.draw_flag:
