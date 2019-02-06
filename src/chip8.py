@@ -226,6 +226,7 @@ class Chip8:
             0x8004: opcode,
             0x8005: opcode,
             0x8006: opcode,
+            0x8007: opcode,
             0x800E: opcode,
         }.get(opcode, lambda: None)
 
