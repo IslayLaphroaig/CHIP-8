@@ -14,16 +14,16 @@ This project is a CHIP-8 interpretor written in Python 3. The goal is to learn a
 The license is [MIT](https://github.com/IslayLaphroaig/CHIP-8/blob/master/LICENSE)
 
 ## Installation
-The code was developed against Python 3.7.1 and was tested on Windows 10 and Manjaro Linux. Assuming Python 3.7 is installed and configured for your OS, clone the repository to a Python virtualenv or to another location of your choosing. Open a terminal and cd into the CHIP-8 directory, from here run "pip install -r requirements.txt". This will install glfw, PyOpenGL and tkinter. To launch the interpreter, from the CHIP-8 directory, run "python .\src\main.py" which will open a file explorer using tkinter, navigate to a Chip8 rom and open it to begin.
+The code was developed against Python 3.7.1 and was tested on Windows 10 and Manjaro Linux. Assuming Python 3.7 is installed and configured for your OS, clone the repository to a Python virtualenv or to another location of your choosing. Open a terminal and cd into the CHIP-8 directory, from here run "pip install -r requirements.txt". This will install glfw and PyOpenGL. To launch the interpreter, from the CHIP-8 directory, run "python .\src\main.py" which will open a file explorer using tkinter, navigate to a Chip8 rom and open it to begin.
 
 ## Key Mappings
 The computers using the Chip-8 language had a 16-key hexadecimal keypad. The original keypad and the mappings which my Chip-8 interpreter uses is shown below:
 
-  Chip-8   Interpreter
-|1|2|3|C|   |1|2|3|4|
-|4|5|6|D|   |Q|W|E|R|
-|7|8|9|E|   |A|S|D|F|
-|A|0|B|F|   |Z|X|C|V|
+	  Chip-8   Interpreter
+	|1|2|3|C|   |1|2|3|4|
+	|4|5|6|D|   |Q|W|E|R|
+	|7|8|9|E|   |A|S|D|F|
+	|A|0|B|F|   |Z|X|C|V|
 
 
 ## References
