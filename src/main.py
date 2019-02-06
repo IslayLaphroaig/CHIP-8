@@ -1,4 +1,5 @@
 import glfw
+from os import getcwd
 from OpenGL.GL import (
     glBegin,
     glClear,
@@ -23,7 +24,15 @@ def main():
     Tk().withdraw()
     chip_8 = Chip8()
     chip_8.load_data("font_set", 0)
-    chip_8.load_data(askopenfilename(), chip_8.pc)
+    chip_8.load_data(
+        askopenfilename(
+            initialdir=getcwd(),
+            title="Select a CHIP-8 Rom",
+            filetypes=(("Chip-8 Roms", "*.ch8"),),
+        ),
+        chip_8.pc,
+    )
+    Tk().destroy()
 
     def key_callback(window, key, scancode, action, mods):
         def key_1():
@@ -74,6 +83,9 @@ def main():
         def key_v():
             chip_8.keys[0xF] = action == glfw.PRESS
 
+        def exit_rom():
+            quit()
+
         return {
             glfw.KEY_1: key_1,
             glfw.KEY_2: key_2,
@@ -91,6 +103,7 @@ def main():
             glfw.KEY_X: key_x,
             glfw.KEY_C: key_c,
             glfw.KEY_V: key_v,
+            glfw.KEY_ESCAPE: exit_rom,
         }.get(key, lambda: None)()
 
     def draw():
@@ -103,8 +116,7 @@ def main():
                     glVertex3f(
                         (x * DISPLAY_MODIFIER), 
                         (y * DISPLAY_MODIFIER), 
-                        0.0,
-                    )
+                        0.0),
                     glVertex3f(
                         (x * DISPLAY_MODIFIER),
                         (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
