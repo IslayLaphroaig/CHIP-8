@@ -285,7 +285,6 @@ class Chip8:
 
     def decode_opcode(self, opcode):
         first_four_bits_of_opcode = opcode & 0xF000
-
         return {
             0x0000: self.least_significant_bits(opcode),
             0x8000: self.eightxy0_to_eightxye(opcode),
