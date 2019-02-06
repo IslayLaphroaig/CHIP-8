@@ -7,8 +7,6 @@ DISPLAY_WIDTH = 64
 class Chip8:
     def __init__(self):
         self.opcode = 0
-        self.first_four_bits_of_opcode = 0
-        self.decoded_opcode = 0
         self.memory = [0] * 4096
         self.v = [0] * 16
         self.i = 0
@@ -22,7 +20,7 @@ class Chip8:
         self.draw_flag = False
 
     def load_data(self, file, offset):
-        data = open(file, "rb").read()
+        data = open(file, 'rb').read()
         for index, byte in enumerate(data):
             self.memory[offset + index] = byte
 
@@ -87,33 +85,27 @@ class Chip8:
         self.v[self.x(self.opcode)] = self.v[self.y(self.opcode)]
 
     def set_vx_to_vx_or_vy(self):
-        self.v[self.x(self.opcode)] = (
-            self.v[self.x(self.opcode)] | self.v[self.y(self.opcode)]
-        )
+        self.v[self.x(self.opcode)] |= self.v[self.y(self.opcode)]
 
     def set_vx_to_vx_and_vy(self):
-        self.v[self.x(self.opcode)] = (
-            self.v[self.x(self.opcode)] & self.v[self.y(self.opcode)]
-        )
+        self.v[self.x(self.opcode)] &= self.v[self.y(self.opcode)]
 
     def set_vx_to_vx_xor_vy(self):
-        self.v[self.x(self.opcode)] = (
-            self.v[self.x(self.opcode)] ^ self.v[self.y(self.opcode)]
-        )
+        self.v[self.x(self.opcode)] ^= self.v[self.y(self.opcode)]
 
     def set_vx_to_vx_plus_vy(self):
-        self.v[0xF] = [0x0]
+        self.v[0xF] = 0
         total = self.v[self.x(self.opcode)] + self.v[self.y(self.opcode)]
         if total > 255:
-            self.v[0xF] = [0x1]
+            self.v[0xF] = 1
             total -= 256
         self.v[self.x(self.opcode)] = total
 
     def set_vx_to_vx_minus_vy(self):
-        self.v[0xF] = [0x1]
+        self.v[0xF] = 1
         difference = self.v[self.x(self.opcode)] - self.v[self.y(self.opcode)]
         if difference < 0:
-            self.v[0xF] = [0x0]
+            self.v[0xF] = 0
             difference += 256
         self.v[self.x(self.opcode)] = difference
 
@@ -122,10 +114,10 @@ class Chip8:
         self.v[self.x(self.opcode)] = self.v[self.x(self.opcode)] >> 1
 
     def set_vx_to_vy_minus_vx(self):
-        self.v[0xF] = [0x1]
+        self.v[0xF] = 1
         difference = self.v[self.y(self.opcode)] - self.v[self.x(self.opcode)]
         if difference < 0:
-            self.v[0xF] = [0x0]
+            self.v[0xF] = 0
             difference += 256
         self.v[self.x(self.opcode)] = difference
 
@@ -150,7 +142,7 @@ class Chip8:
         x_cord = self.v[self.x(self.opcode)]
         y_cord = self.v[self.y(self.opcode)]
         height = self.n(self.opcode)
-        self.v[0xF] = [0x0]
+        self.v[0xF] = 0
         y_line = 0
 
         while y_line < height:
@@ -158,17 +150,9 @@ class Chip8:
             x_line = 0
             while x_line < 8:
                 if (pixel & (128 >> x_line)) != 0:
-                    if (
-                        self.display[
-                            ((x_cord + x_line) % DISPLAY_WIDTH)
-                            + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)
-                        ] == 1
-                    ):
-                        self.v[0xF] = [0x1]
-                    self.display[
-                        ((x_cord + x_line) % DISPLAY_WIDTH)
-                        + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)
-                    ] ^= 1
+                    if (self.display[((x_cord + x_line) % DISPLAY_WIDTH) + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)] == 1):
+                        self.v[0xF] = 1
+                    self.display[((x_cord + x_line) % DISPLAY_WIDTH) + (((y_cord + y_line) % DISPLAY_HEIGHT) * DISPLAY_WIDTH)] ^= 1
                 x_line += 1
             y_line += 1
         self.draw_flag = True
@@ -300,17 +284,18 @@ class Chip8:
         }.get(decoded_opcode, lambda: None)()
 
     def decode_opcode(self, opcode):
-        self.first_four_bits_of_opcode = opcode & 0xF000
+        first_four_bits_of_opcode = opcode & 0xF000
+
         return {
             0x0000: self.least_significant_bits(opcode),
             0x8000: self.eightxy0_to_eightxye(opcode),
             0xE000: self.ex9e_to_fx65(opcode),
             0xF000: self.ex9e_to_fx65(opcode),
-        }.get(self.first_four_bits_of_opcode, self.first_four_bits_of_opcode)
+        }.get(first_four_bits_of_opcode, first_four_bits_of_opcode)
 
     def cycle(self):
         self.opcode = self.memory[self.pc] << 8 | self.memory[self.pc + 1]
         self.pc += 2
-        self.decoded_opcode = self.decode_opcode(self.opcode)
-        self.execute_opcode(self.decoded_opcode)
+        decoded_opcode = self.decode_opcode(self.opcode)
+        self.execute_opcode(decoded_opcode)
         return True
