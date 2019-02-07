@@ -175,7 +175,7 @@ class Chip8:
             if self.keys[index] == 1:
                 self.v[self.x(self.opcode)] = index
                 key_pressed = True
-                self.draw_flag = True
+            self.draw_flag = True
             index += 1
         if not key_pressed:
             self.pc -= 2

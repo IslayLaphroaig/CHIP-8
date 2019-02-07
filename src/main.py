@@ -18,6 +18,7 @@ from chip8 import Chip8
 DISPLAY_HEIGHT = 32
 DISPLAY_WIDTH = 64
 DISPLAY_MODIFIER = 15
+FPS = 60.0
 
 
 def main():
@@ -151,11 +152,12 @@ def main():
 
     glfw.set_key_callback(window, key_callback)
     glfw.make_context_current(window)
-    glfw.swap_interval(0)
     gluOrtho2D(
         0, (DISPLAY_WIDTH * DISPLAY_MODIFIER), (DISPLAY_HEIGHT * DISPLAY_MODIFIER), 0
     )
 
+    last_time = glfw.get_time()
+    
     while not glfw.window_should_close(window):
         while not chip_8.draw_flag:
             chip_8.update_timers()
@@ -163,8 +165,10 @@ def main():
                 chip_8.draw_flag = True
                 break
             if chip_8.draw_flag:
-                draw()
-                glfw.swap_buffers(window)
+                while glfw.get_time() < last_time + 1.0/FPS:
+                    draw()
+                    glfw.swap_buffers(window)
+                last_time += 1.0/FPS
         chip_8.draw_flag = False
         glfw.poll_events()
     glfw.terminate()
