@@ -115,9 +115,10 @@ def main():
                 if chip_8.display[x + (64 * y)] == 1:
                     glBegin(GL_QUADS)
                     glVertex3f(
-                        (x * DISPLAY_MODIFIER), 
-                        (y * DISPLAY_MODIFIER), 
-                        0.0),
+                        (x * DISPLAY_MODIFIER),
+                        (y * DISPLAY_MODIFIER),
+                        0.0,
+                    )
                     glVertex3f(
                         (x * DISPLAY_MODIFIER),
                         (y * DISPLAY_MODIFIER) + DISPLAY_MODIFIER,
@@ -157,7 +158,7 @@ def main():
     )
 
     last_time = glfw.get_time()
-    
+
     while not glfw.window_should_close(window):
         while not chip_8.draw_flag:
             chip_8.update_timers()
@@ -165,10 +166,10 @@ def main():
                 chip_8.draw_flag = True
                 break
             if chip_8.draw_flag:
-                while glfw.get_time() < last_time + 1.0/FPS:
+                while glfw.get_time() < last_time + 1.0 / FPS:
                     draw()
                     glfw.swap_buffers(window)
-                last_time += 1.0/FPS
+                last_time += 1.0 / FPS
         chip_8.draw_flag = False
         glfw.poll_events()
     glfw.terminate()
