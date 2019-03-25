@@ -3,6 +3,7 @@ from src.chip8 import Chip8
 
 
 chip_8 = Chip8()
+opcode = 0x6A02
 
 
 # ensure the constructor initialises the values and array lengths correctly.
@@ -40,3 +41,51 @@ def test_load_data():
     while j < len(chip_8.memory):
         assert chip_8.memory[j] == 0
         j += 1
+
+# tests for the bitwise operatorations.
+def test_nnn():
+    assert chip_8.nnn(opcode) == 0xA02
+
+
+def test_nn():
+    assert chip_8.nn(opcode) == 0x2
+
+
+def test_n():
+    assert chip_8.n(opcode) == 0x2
+
+
+def test_x():
+    assert chip_8.x(opcode) == 0xA
+
+
+def test_y():
+    assert chip_8.y(opcode) == 0x0
+
+# fill all of the display elements with values of 1.
+# clear the screen and ensure all of the values have been reset to 0.
+def test_clear_screen():
+    i = 0
+    while i < len(chip_8.display):
+        chip_8.display[i] += 1
+        i += 1
+    
+    chip_8.clear_screen()
+
+    assert len(chip_8.display) == 2048
+    
+    i = 0
+    while i < len(chip_8.display):
+        assert chip_8.display[i] == 0
+        i += 1
+
+# set index 0 of the stack to 500.
+# set the stack pointer to 1 so that when return_from_subroutine is called the stackpointer should be decremented by one.
+# if the stack pointer is decremented by one then this should set the pc to the value of the first elemement of the stack, which we have set to 500.
+def test_return_from_subroutine():
+    chip_8.stack[0] = 500
+    chip_8.stack_pointer = 1
+
+    chip_8.return_from_subroutine()
+    assert chip_8.stack_pointer == 0
+    assert chip_8.pc == 500
