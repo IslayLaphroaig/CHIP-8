@@ -1,5 +1,6 @@
 import glfw
 from os import getcwd
+from os import system
 from OpenGL.GL import (
     glBegin,
     glClear,
@@ -13,12 +14,18 @@ from OpenGL.GL import (
 from OpenGL.GLU import gluOrtho2D
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
+from sys import platform
+from winsound import Beep
 from chip8 import Chip8
+
 
 DISPLAY_HEIGHT = 32
 DISPLAY_WIDTH = 64
 DISPLAY_MODIFIER = 15
 FPS = 60.0
+FREQUENCY = 1000
+DURATION_WINDOWS = 100
+DURATION_LINUX_MAC = 0.1
 
 
 def main():
@@ -162,6 +169,15 @@ def main():
     while not glfw.window_should_close(window):
         while not chip_8.draw_flag:
             chip_8.update_timers()
+            if chip_8.play_sound == True:
+                if platform == 'win32':
+                    Beep(FREQUENCY , DURATION_WINDOWS)
+                if platform == 'linux2':
+                    system('play -nq -t alsa synth {} sine {}'.format(DURATION_LINUX_MAC, FREQUENCY))
+                if platform == 'darwin':
+                    system('play -nq -t alsa synth {} sine {}'.format(DURATION_LINUX_MAC, FREQUENCY))
+                chip_8.play_sound = False
+                break
             if not chip_8.cycle():
                 chip_8.draw_flag = True
                 break

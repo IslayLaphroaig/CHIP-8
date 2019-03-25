@@ -18,6 +18,7 @@ class Chip8:
         self.keys = [0] * 16
         self.display = [0] * (64 * 32)
         self.draw_flag = False
+        self.play_sound = False
 
     def load_data(self, file, offset):
         data = open(file, 'rb').read()
@@ -30,6 +31,8 @@ class Chip8:
 
         if self.sound_timer > 0:
             self.sound_timer -= 1
+            if self.sound_timer == 0:
+                self.play_sound = True
 
     def nnn(self, opcode):
         return opcode & 0x0FFF
