@@ -191,7 +191,7 @@ def test_set_vx_to_vx_plus_nn():
 # the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
 # the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
 # dummy values for the registers are then set.
-# assert that the value of register 10 is now eplaced by the value in register 0.
+# assert that the value of index 10 of register v is now replaced by the value in index 0 of register v.
 def test_set_vx_to_vy():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -201,3 +201,48 @@ def test_set_vx_to_vy():
     chip_8.v[0] = 3
     chip_8.set_vx_to_vy()
     assert chip_8.v[10] == 3
+
+
+# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
+# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
+# dummy values for the registers are then set.
+# assert that the value of index 10 of register v is replaced by the result of the bitwise OR operation between the values of index 10 and 0 of register v.
+def test_set_vx_to_vx_or_vy():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    assert chip_8.y(chip_8.opcode) == 0
+    chip_8.v[10] = 23
+    chip_8.v[0] = 44
+    chip_8.set_vx_to_vx_or_vy()
+    assert chip_8.v[10] == 63
+
+
+# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
+# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
+# dummy values for the registers are then set.
+# assert that the value of index 10 of register v is replaced by the result of the bitwise AND operation between the values of index 10 and 0 of register v.
+def test_set_vx_to_vx_and_vy():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    assert chip_8.y(chip_8.opcode) == 0
+    chip_8.v[10] = 23
+    chip_8.v[0] = 44
+    chip_8.set_vx_to_vx_and_vy()
+    assert chip_8.v[10] == 4
+
+
+# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
+# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
+# dummy values for the registers are then set.
+# assert that the value of index 10 of register v is replaced by the result of the bitwise XOR operation between the values of index 10 and 0 of register v.
+def test_set_vx_to_vx_xor_vy():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    assert chip_8.y(chip_8.opcode) == 0
+    chip_8.v[10] = 23
+    chip_8.v[0] = 44
+    chip_8.set_vx_to_vx_xor_vy()
+    assert chip_8.v[10] == 59
