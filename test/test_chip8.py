@@ -303,3 +303,42 @@ def test_set_vx_to_vx_minus_vy():
     chip_8.set_vx_to_vx_minus_vy()
     assert chip_8.v[0xF] == 1
     assert chip_8.v[10] == 111
+
+
+# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
+def test_set_vx_to_vx_shr_1():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    chip_8.v[10] = 11
+    chip_8.set_vx_to_vx_shr_1()
+    assert chip_8.v[10] == 5
+    assert chip_8.v[0xF] == 1
+
+
+# perform two tests within the one function, a test for when the borrow is set and when the borrow is not set
+# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
+# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
+# dummy values for the registers are then set.
+# assert that the when there is a borrow, that the value of index 10 for register v is 21
+# assert that the when there is no borrow, that the value of index 10 for register v is 145
+def test_set_vx_to_vy_minus_vx():
+    chip_8 =  Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    assert chip_8.y(chip_8.opcode) == 0
+    chip_8.v[10] = 23
+    chip_8.v[0] = 44
+    chip_8.set_vx_to_vy_minus_vx()
+    assert chip_8.v[0xF] == 1
+    assert chip_8.v[10] == 21
+
+    chip_8 =  Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    assert chip_8.y(chip_8.opcode) == 0
+    chip_8.v[10] = 254
+    chip_8.v[0] = 143
+    chip_8.set_vx_to_vy_minus_vx()
+    assert chip_8.v[0xF] == 0
+    assert chip_8.v[10] == 145
