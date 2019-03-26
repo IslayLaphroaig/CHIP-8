@@ -148,6 +148,12 @@ def test_skip_if_vx_not_equal_to_nn():
     assert chip_8.pc == 514
 
 
+# the bitwise operations for x and y should both return 11
+# asser that if the two values are equal that the pc is incremented by 2
 def test_skip_if_vx_equals_vy():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 3000
+    assert chip_8.x(chip_8.opcode) == 11
+    assert chip_8.y(chip_8.opcode) == 11
+    chip_8.skip_if_vx_equals_vy()
+    assert chip_8.pc == 514
