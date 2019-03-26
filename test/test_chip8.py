@@ -2,7 +2,7 @@ import pytest
 from src.chip8 import Chip8
 
 
-# ensure the constructor initialises the variable values and array lengths correctly.
+# assert the constructor initialises the variable values and array lengths correctly.
 def test_consutructor():
     chip_8 = Chip8()
     assert chip_8.opcode == 0
@@ -21,7 +21,8 @@ def test_consutructor():
 
 # load the font set at index 0 to test the data load process.
 # the font set file contains the values noted in the Cowgod reference guide: http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#2.4.
-# the remaining values for the memory should be zero, therefore we check that the memory is filled with non-zero values for index 0 to 79 and zero values for the remainder of the memory.
+# assert that the values for index 0 and 79 match the values in the font set file, and that the next value is a zero value.
+# assert that the index 0 to 79 are non-zero values and that index 80 onwards to the end of the memory array is non-zero values.
 def test_load_data():
     chip_8 = Chip8()
     chip_8.load_data("font_set", 0)
@@ -42,6 +43,7 @@ def test_load_data():
 
 
 # tests for the bitwise operations using an opcode value of 27138.
+# assert that the bitwise operations produce the correct values.
 def test_nnn():
     chip_8 = Chip8()
     opcode = 27138
@@ -73,7 +75,7 @@ def test_y():
 
 
 # fill all of the display elements with values of 1.
-# clear the screen and ensure all of the values have been reset to 0.
+# clear the screen and assert that all of the values have been reset to 0.
 def test_clear_screen():
     chip_8 = Chip8()
     i = 0
@@ -93,7 +95,7 @@ def test_clear_screen():
 
 # set index 0 of the stack to 500.
 # set the stack pointer to 1 so that when return_from_subroutine is called the stackpointer should be decremented by 1 to 0.
-# if the stack pointer is decremented by one then this should set the pc to the value of the first elemement of the stack, which we have set to 500.
+# assert that the stack pointer has been decremented by 1 and that the pc is set to the value of the stack at index 0
 def test_return_from_subroutine():
     chip_8 = Chip8()
     chip_8.stack[0] = 500
@@ -104,6 +106,7 @@ def test_return_from_subroutine():
 
 
 # calling jump_to_nnn sets the pc to the return value of the bitwise nnn operation which takes an opcode as a parameter.
+# assert that the pc is set to the return value of the bitwise operation nnn
 def test_jump_to_nnn():
     chip_8 = Chip8()
     chip_8.opcode = 27138
@@ -123,9 +126,9 @@ def test_call_subroutine_at_nnn():
     assert chip_8.pc == 2562
 
 
-# the bitwise operations for opcode 2562 will result in index 10 of the v register
-# therefore set the value of this register to 2 as the bitwise operation for self.nn(self.opcode) will return the value of 2
-# assert that the program counter has been incremented correctly by 2 if the values are equal
+# the bitwise operations for opcode 2562 will result in index 10 of the v register.
+# therefore set the value of this register to 2 as the bitwise operation for self.nn(self.opcode) will return the value of 2.
+# assert that the program counter has been incremented correctly by 2 if the values are equal.
 def test_skip_if_vx_equals_nn():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -135,9 +138,9 @@ def test_skip_if_vx_equals_nn():
     chip_8.skip_if_vx_equals_nn()
     assert chip_8.pc == 514
 
-# the bitwise operations for opcode 2562 will result in index 10 of the v register
-# therefore set the value of this register to 43 to ensure they are not equal as the bitwise operation for self.nn(self.opcode) will return the value of 2
-# assert that the program counter has been incremented correctly by 2 if the values are not equal
+# the bitwise operations for opcode 2562 will result in index 10 of the v register.
+# therefore set the value of this register to 43 to ensure they are not equal as the bitwise operation for self.nn(self.opcode) will return the value of 2.
+# assert that the program counter has been incremented correctly by 2 if the values are not equal.
 def test_skip_if_vx_not_equal_to_nn():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -148,8 +151,8 @@ def test_skip_if_vx_not_equal_to_nn():
     assert chip_8.pc == 514
 
 
-# the bitwise operations for x and y should both return 11
-# asser that if the two values are equal that the pc is incremented by 2
+# the bitwise operations for x and y should both return 11.
+# assert that if the two values are equal that the pc is incremented by 2.
 def test_skip_if_vx_equals_vy():
     chip_8 = Chip8()
     chip_8.opcode = 3000
@@ -157,3 +160,44 @@ def test_skip_if_vx_equals_vy():
     assert chip_8.y(chip_8.opcode) == 11
     chip_8.skip_if_vx_equals_vy()
     assert chip_8.pc == 514
+
+
+# the bitwise operations for opcode 2562 will result in index 10 of the v register.
+# assert that the value of this register is set to the value of the bitwise operation for nn.
+def test_set_vx_to_nn():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    assert chip_8.nn(chip_8.opcode) == 2
+    chip_8.set_vx_to_nn()
+    assert chip_8.v[10] == 2
+
+
+# the bitwise operations for opcode 2562 will result in index 10 of the v register.
+# the value of this register should then be set to the value of the bitwise operation for nn.
+# the value of index 10 is set to the dummy value of 23 in order to add the value of nn to it.
+# the modulo keeps the value within the 8 bit range.
+# assert that index 10 of v is set to 25.
+def test_set_vx_to_vx_plus_nn():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    assert chip_8.nn(chip_8.opcode) == 2
+    chip_8.v[10] = 23
+    chip_8.set_vx_to_vx_plus_nn()
+    assert chip_8.v[10] == 25
+
+
+# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
+# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
+# dummy values for the registers are then set.
+# assert that the value of register 10 is now eplaced by the value in register 0.
+def test_set_vx_to_vy():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    assert chip_8.y(chip_8.opcode) == 0
+    chip_8.v[10] = 12
+    chip_8.v[0] = 3
+    chip_8.set_vx_to_vy()
+    assert chip_8.v[10] == 3
