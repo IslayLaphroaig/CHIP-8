@@ -74,7 +74,7 @@ class Chip8:
             self.pc += 2
 
     def skip_if_vx_equals_vy(self):
-        if not self.v[self.x(self.opcode)] == self.nn(self.opcode):
+        if not self.v[self.x(self.opcode)] == self.v[self.y(self.opcode)]:
             self.pc += 2
 
     def set_vx_to_nn(self):

@@ -146,3 +146,8 @@ def test_skip_if_vx_not_equal_to_nn():
     chip_8.v[chip_8.x(chip_8.opcode)] = 43
     chip_8.skip_if_vx_not_equal_to_nn()
     assert chip_8.pc == 514
+
+
+def test_skip_if_vx_equals_vy():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
