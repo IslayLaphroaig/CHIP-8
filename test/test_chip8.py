@@ -40,7 +40,8 @@ def test_load_data():
         assert chip_8.memory[j] == 0
         j += 1
 
-# tests for the bitwise operatorations using an opcode value of 27138.
+
+# tests for the bitwise operations using an opcode value of 27138.
 def test_nnn():
     chip_8 = Chip8()
     opcode = 27138
@@ -70,6 +71,7 @@ def test_y():
     opcode = 27138
     assert chip_8.y(opcode) == 0
 
+
 # fill all of the display elements with values of 1.
 # clear the screen and ensure all of the values have been reset to 0.
 def test_clear_screen():
@@ -78,15 +80,16 @@ def test_clear_screen():
     while i < len(chip_8.display):
         chip_8.display[i] += 1
         i += 1
-    
+
     chip_8.clear_screen()
 
     assert len(chip_8.display) == 2048
-    
+
     i = 0
     while i < len(chip_8.display):
         assert chip_8.display[i] == 0
         i += 1
+
 
 # set index 0 of the stack to 500.
 # set the stack pointer to 1 so that when return_from_subroutine is called the stackpointer should be decremented by 1 to 0.
@@ -95,7 +98,6 @@ def test_return_from_subroutine():
     chip_8 = Chip8()
     chip_8.stack[0] = 500
     chip_8.stack_pointer = 1
-
     chip_8.return_from_subroutine()
     assert chip_8.stack_pointer == 0
     assert chip_8.pc == 500
@@ -119,3 +121,28 @@ def test_call_subroutine_at_nnn():
     assert chip_8.stack[0] == 512
     assert chip_8.stack_pointer == 1
     assert chip_8.pc == 2562
+
+
+# the bitwise operations for opcode 2562 will result in index 10 of the v register
+# therefore set the value of this register to 2 as the bitwise operation for self.nn(self.opcode) will return the value of 2
+# assert that the program counter has been incremented correctly by 2 if the values are equal
+def test_skip_if_vx_equals_nn():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    assert chip_8.nn(chip_8.opcode) == 2
+    chip_8.v[chip_8.x(chip_8.opcode)] = 2
+    chip_8.skip_if_vx_equals_nn()
+    assert chip_8.pc == 514
+
+# the bitwise operations for opcode 2562 will result in index 10 of the v register
+# therefore set the value of this register to 43 to ensure they are not equal as the bitwise operation for self.nn(self.opcode) will return the value of 2
+# assert that the program counter has been incremented correctly by 2 if the values are not equal
+def test_skip_if_vx_not_equal_to_nn():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    assert chip_8.nn(chip_8.opcode) == 2
+    chip_8.v[chip_8.x(chip_8.opcode)] = 43
+    chip_8.skip_if_vx_not_equal_to_nn()
+    assert chip_8.pc == 514
