@@ -19,10 +19,11 @@ def test_consutructor():
     assert chip_8.play_sound == False
 
 
+# load data into memory.
 # load the font set at index 0 to test the data load process.
 # the font set file contains the values noted in the Cowgod reference guide: http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#2.4.
-# assert that the values for index 0 and 79 match the values in the font set file, and that the next value is a zero value.
-# assert that the index 0 to 79 are non-zero values and that index 80 onwards to the end of the memory array is non-zero values.
+# assert that the values for index 0 and 79 match the values in the font set file, and that the next value is zero.
+# assert that the index 0 to 79 are non-zero values and that index 80 onwards to the end of the memory array are zero values.
 def test_load_data():
     chip_8 = Chip8()
     chip_8.load_data("font_set", 0)
@@ -42,8 +43,8 @@ def test_load_data():
         j += 1
 
 
-# tests for the bitwise operations using an opcode value of 27138.
-# assert that the bitwise operations produce the correct values.
+# bitwise operations.
+# assert that the bitwise operations produce the correct values for each bitwise function using a dummy opcode value of 27138(0x6A02).
 def test_nnn():
     chip_8 = Chip8()
     opcode = 27138
@@ -74,6 +75,7 @@ def test_y():
     assert chip_8.y(opcode) == 0
 
 
+# clear the screen.
 # fill all of the display elements with values of 1.
 # clear the screen and assert that all of the values have been reset to 0.
 def test_clear_screen():
@@ -93,9 +95,8 @@ def test_clear_screen():
         i += 1
 
 
-# set index 0 of the stack to 500.
-# set the stack pointer to 1 so that when return_from_subroutine is called the stackpointer should be decremented by 1 to 0.
-# assert that the stack pointer has been decremented by 1 and that the pc is set to the value of the stack at index 0
+# return from a subroutine.
+# assert that the stack pointer has been decremented by 1 and that the pc is set to the value of the stack at index 0.
 def test_return_from_subroutine():
     chip_8 = Chip8()
     chip_8.stack[0] = 500
@@ -105,8 +106,8 @@ def test_return_from_subroutine():
     assert chip_8.pc == 500
 
 
-# calling jump_to_nnn sets the pc to the return value of the bitwise nnn operation which takes an opcode as a parameter.
-# assert that the pc is set to the return value of the bitwise operation nnn
+# jumpt to address at nnn.
+# assert that the pc is set to the return value of the function nnn.
 def test_jump_to_nnn():
     chip_8 = Chip8()
     chip_8.opcode = 27138
@@ -114,9 +115,10 @@ def test_jump_to_nnn():
     assert chip_8.pc == 2562
 
 
-# calling call_subroutine_at_nnn passes the stack pointer as an index to the stack, and sets this index to the value of the pc.
-# the stack pointer is then incremented by 1.
-# the pc is then set to the return value of the bitwise nnn operation which takes an opcode as a parameter.
+# call subroutine at nnn
+# assert that the stack at index 0 (the vaulue of the stack pointer) is set to the value of the pc.
+# assert that the stack pointer has been incremented by 1.
+# assert that the pc is set to the return value of the function nnn.
 def test_call_subroutine_at_nnn():
     chip_8 = Chip8()
     chip_8.opcode = 27138
@@ -126,9 +128,11 @@ def test_call_subroutine_at_nnn():
     assert chip_8.pc == 2562
 
 
-# the bitwise operations for opcode 2562 will result in index 10 of the v register.
-# therefore set the value of this register to 2 as the bitwise operation for self.nn(self.opcode) will return the value of 2.
-# assert that the program counter has been incremented correctly by 2 if the values are equal.
+# skip next instruction if v[x] equals the return value of nn.
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function nn is 2.
+# set the value of v[10] to 2.
+# assert that the pc has been incrememented by 2 as v[x] equals the return value of function nn.
 def test_skip_if_vx_equals_nn():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -138,9 +142,12 @@ def test_skip_if_vx_equals_nn():
     chip_8.skip_if_vx_equals_nn()
     assert chip_8.pc == 514
 
-# the bitwise operations for opcode 2562 will result in index 10 of the v register.
-# therefore set the value of this register to 43 to ensure they are not equal as the bitwise operation for self.nn(self.opcode) will return the value of 2.
-# assert that the program counter has been incremented correctly by 2 if the values are not equal.
+
+# skip the next instruction if v[x] does not equal the return value of nn.
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function nn is 2.
+# set the value of v[10] to 43.
+# assert that the pc has been incrememented by 2 as v[x] does not equal the return value of function nn.
 def test_skip_if_vx_not_equal_to_nn():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -151,8 +158,10 @@ def test_skip_if_vx_not_equal_to_nn():
     assert chip_8.pc == 514
 
 
-# the bitwise operations for x and y should both return 11.
-# assert that if the two values are equal that the pc is incremented by 2.
+# skip the next instruction of v[x] equals the return value of v[y].
+# assert that the return value of funcion x is equal to 11.
+# assert that the return value of function y is equal to 11.
+# assert that the pc has been incremented by 2 as v[x] equals v[y].
 def test_skip_if_vx_equals_vy():
     chip_8 = Chip8()
     chip_8.opcode = 3000
@@ -162,8 +171,10 @@ def test_skip_if_vx_equals_vy():
     assert chip_8.pc == 514
 
 
-# the bitwise operations for opcode 2562 will result in index 10 of the v register.
-# assert that the value of this register is set to the value of the bitwise operation for nn.
+# set v[x] to nn.
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function nn is equal to 2.
+# assert that v[x] has been set to the return value of function nn.
 def test_set_vx_to_nn():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -173,11 +184,10 @@ def test_set_vx_to_nn():
     assert chip_8.v[10] == 2
 
 
-# the bitwise operations for opcode 2562 will result in index 10 of the v register.
-# the value of this register should then be set to the value of the bitwise operation for nn.
-# the value of index 10 is set to the dummy value of 23 in order to add the value of nn to it.
-# the modulo keeps the value within the 8 bit range.
-# assert that index 10 for register v is set to 25.
+# add the value of nn to the value in v[x].
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function nn is equal to 2.
+# assert that the value of v[x] is equal to the value in v[x] plus the return value of the function nn.
 def test_set_vx_to_vx_plus_nn():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -188,10 +198,10 @@ def test_set_vx_to_vx_plus_nn():
     assert chip_8.v[10] == 25
 
 
-# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
-# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
-# dummy values for the registers are then set.
-# assert that the value of index 10 for register v is now replaced by the value in index 0 for register v.
+# set v[x] to the value of v[y].
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function y is equal to 0.
+# assert that the value of v[x] has been set to the value of v[y].
 def test_set_vx_to_vy():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -203,10 +213,10 @@ def test_set_vx_to_vy():
     assert chip_8.v[10] == 3
 
 
-# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
-# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
-# dummy values for the registers are then set.
-# assert that the value of index 10 for register v is replaced by the result of the bitwise OR operation between the values of index 10 and 0 for register v.
+# set v[x] to v[x] OR v[y].
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function y is equal to 0.
+# assert that the value of v[x] has been set to the bitwise OR operation between the values in v[x] and v[y].
 def test_set_vx_to_vx_or_vy():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -218,10 +228,10 @@ def test_set_vx_to_vx_or_vy():
     assert chip_8.v[10] == 63
 
 
-# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
-# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
-# dummy values for the registers are then set.
-# assert that the value of index 10 for register v is replaced by the result of the bitwise AND operation between the values of index 10 and 0 of register v.
+# set v[x] to v[x] AND v[y].
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function y is equal to 0.
+# assert that the value of v[x] has been set to the bitwise AND operation between the values in v[x] and v[y].
 def test_set_vx_to_vx_and_vy():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -233,10 +243,10 @@ def test_set_vx_to_vx_and_vy():
     assert chip_8.v[10] == 4
 
 
-# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
-# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
-# dummy values for the registers are then set.
-# assert that the value of index 10 for register v is replaced by the result of the bitwise XOR operation between the values of index 10 and 0 of register v.
+# set v[x] to v[x] XOR v[y].
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function y is equal to 0.
+# assert that the value of v[x] has been set to the bitwise XOR operation between the values in v[x] and v[y].
 def test_set_vx_to_vx_xor_vy():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -248,14 +258,12 @@ def test_set_vx_to_vx_xor_vy():
     assert chip_8.v[10] == 59
 
 
-
-# perform two tests within the one function, a test for when the carry is set and when the carry is not set
-# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
-# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
-# dummy values for the registers are then set.
-# assert that the when there is no carry, that the value of index 10 for register v is 67
-# assert that the when there is a carry, that the value of index 10 for register v is 141
-def test_set_vx_to_vx_plus_vy():
+# set v[x] to v[x] plus v[y], v[F] is set 0 when there is no carry.
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function y is equal to 0.
+# assert that there is no carry.
+# assert that the value of v[x] is set to v[x] plus v[y].
+def test_set_vx_to_vx_plus_vy_no_carry():
     chip_8 = Chip8()
     chip_8.opcode = 2562
     assert chip_8.x(chip_8.opcode) == 10
@@ -266,6 +274,13 @@ def test_set_vx_to_vx_plus_vy():
     assert chip_8.v[0xF] == 0
     assert chip_8.v[10] == 67
 
+
+# set v[x] to v[x] plus v[y], v[F] is set to 1 when there is a carry.
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function y is equal to 0.
+# assert that there is a carry.
+# assert that the value of v[x] is set to v[x] plus v[y].
+def test_set_vx_to_vx_plus_vy_carry():
     chip_8 = Chip8()
     chip_8.opcode = 2562
     assert chip_8.x(chip_8.opcode) == 10
@@ -277,14 +292,13 @@ def test_set_vx_to_vx_plus_vy():
     assert chip_8.v[10] == 141
 
 
-# perform two tests within the one function, a test for when the borrow is set and when the borrow is not set
-# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
-# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
-# dummy values for the registers are then set.
-# assert that the when there is no borrow, that the value of index 10 for register v is 67
-# assert that the when there is a borrow, that the value of index 10 for register v is 141
-def test_set_vx_to_vx_minus_vy():
-    chip_8 =  Chip8()
+# set v[x] to v[x] minus v[y], v[F] is set to 0 when there is a borrow.
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function y is equal to 0.
+# assert that there is a borrow.
+# assert that the value of v[x] is set to v[x] minus v[y].
+def test_set_vx_to_vx_minus_vy_borrow():
+    chip_8 = Chip8()
     chip_8.opcode = 2562
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
@@ -294,7 +308,14 @@ def test_set_vx_to_vx_minus_vy():
     assert chip_8.v[0xF] == 0
     assert chip_8.v[10] == 235
 
-    chip_8 =  Chip8()
+
+# set v[x] to v[x] minus v[y], v[F] is set to 1 when there is no borrow.
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of function y is equal to 0.
+# assert that there is no borrow.
+# assert that the value of v[x] is set to v[x] minus v[y].
+def test_set_vx_to_vx_minus_vy_no_borrow():
+    chip_8 = Chip8()
     chip_8.opcode = 2562
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
@@ -305,7 +326,10 @@ def test_set_vx_to_vx_minus_vy():
     assert chip_8.v[10] == 111
 
 
-# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
+# store least significant bit of v[x] in v[F] and shift v[x] to the right by one.
+# assert that the return value of funcion x is equal to 10.
+# assert that the value of v[x] has been shifted right by one.
+# assert that the least significant bit of v[x] is stored in v[F].
 def test_set_vx_to_vx_shr_1():
     chip_8 = Chip8()
     chip_8.opcode = 2562
@@ -316,14 +340,13 @@ def test_set_vx_to_vx_shr_1():
     assert chip_8.v[0xF] == 1
 
 
-# perform two tests within the one function, a test for when the borrow is set and when the borrow is not set
-# the bitwise operations of x for opcode 2562 will result in index 10 of the v register.
-# the bitwise operations of y for opcode 2562 will result in index 0 of the v register.
-# dummy values for the registers are then set.
-# assert that the when there is a borrow, that the value of index 10 for register v is 21
-# assert that the when there is no borrow, that the value of index 10 for register v is 145
-def test_set_vx_to_vy_minus_vx():
-    chip_8 =  Chip8()
+# set v[x] to v[y] minus v[x], v[F] is set to 1 when there is no borrow.
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of funcion y is equal to 0.
+# assert that there is no borrow.
+# assert that the value of v[x] is set to v[y] minus v[x].
+def test_set_vx_to_vy_minus_vx_no_borrow():
+    chip_8 = Chip8()
     chip_8.opcode = 2562
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
@@ -333,7 +356,14 @@ def test_set_vx_to_vy_minus_vx():
     assert chip_8.v[0xF] == 1
     assert chip_8.v[10] == 21
 
-    chip_8 =  Chip8()
+
+# set v[x] to v[y] minus v[x], v[F] is set to 0 when there is a borrow.
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of funcion y is equal to 0.
+# assert that there is no borrow.
+# assert that the value of v[x] is set to v[y] minus v[x].
+def test_set_vx_to_vy_minus_vx_borrow():
+    chip_8 = Chip8()
     chip_8.opcode = 2562
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
@@ -342,3 +372,17 @@ def test_set_vx_to_vy_minus_vx():
     chip_8.set_vx_to_vy_minus_vx()
     assert chip_8.v[0xF] == 0
     assert chip_8.v[10] == 145
+
+
+# store most significant bit of v[x] in v[F] and shift v[x] to the left by one.
+# assert that the return value of funcion x is equal to 10.
+# assert that the value of v[x] has been shifted left by one.
+# assert that the most significant bit of v[x] is stored in v[F].
+def test_set_vx_to_vx_shl_1():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    chip_8.v[10] = 200
+    chip_8.set_vx_to_vx_shl_1()
+    assert chip_8.v[10] == 400
+    assert chip_8.v[0xF] == 1
