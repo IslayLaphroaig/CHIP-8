@@ -158,7 +158,7 @@ def test_skip_if_vx_not_equal_to_nn():
     assert chip_8.pc == 514
 
 
-# skip the next instruction of v[x] equals the return value of v[y].
+# skip the next instruction if v[x] equals v[y].
 # assert that the return value of funcion x is equal to 11.
 # assert that the return value of function y is equal to 11.
 # assert that the pc has been incremented by 2 as v[x] equals v[y].
@@ -386,3 +386,16 @@ def test_set_vx_to_vx_shl_1():
     chip_8.set_vx_to_vx_shl_1()
     assert chip_8.v[10] == 400
     assert chip_8.v[0xF] == 1
+
+
+# # skip the next instruction if v[x] does not equal v[y].
+# assert that the return value of funcion x is equal to 10.
+# assert that the return value of funcion y is equal to 0.
+# assert that the pc has been incremented by 2 as v[x] does not equal v[y].
+def test_skip_if_vx_not_equal_vy():
+    chip_8 = Chip8()
+    chip_8.opcode = 2562
+    assert chip_8.x(chip_8.opcode) == 10
+    assert chip_8.y(chip_8.opcode) == 0
+    chip_8.skip_if_vx_equals_vy()
+    assert chip_8.pc == 514
