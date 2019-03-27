@@ -401,8 +401,8 @@ def test_skip_if_vx_not_equal_vy():
     assert chip_8.pc == 514
 
 
-# set i to address nnn
-# assert that 16 bit register i is set to the address nnn
+# set i to address nnn.
+# assert that 16 bit register i is set to the address nnn.
 def test_set_i_to_nn():
     chip_8 = Chip8()
     chip_8.opcode = 27138
@@ -410,8 +410,8 @@ def test_set_i_to_nn():
     assert chip_8.i == 2562
 
 
-# jump to address nnn plus v[0]
-# assert that the pc is now set to nnn plus v[0]
+# jump to address nnn plus v[0].
+# assert that the pc is now set to nnn plus v[0].
 def test_jump_to_nnn_plus_v0():
     chip_8 = Chip8()
     chip_8.opcode = 27138
@@ -420,8 +420,8 @@ def test_jump_to_nnn_plus_v0():
     assert chip_8.pc == 2570
 
 
-# skip next instruction of the key stored in v[x] is pressed
-# assert that the pc has been incrememented by 2 if the value of x[x] is 1
+# skip next instruction of the key stored in v[x] is pressed.
+# assert that the pc has been incrememented by 2 if the value of x[x] is 1.
 def test_skip_if_key_equals_vx():
     chip_8 = Chip8()
     chip_8.opcode = 27138
@@ -430,11 +430,78 @@ def test_skip_if_key_equals_vx():
     assert chip_8.pc == 514
 
 
-# skip next instruction of the key stored in v[x] is not pressed
-# assert that the pc has been incrememented by 2 if the value of x[x] is 0
+# skip next instruction of the key stored in v[x] is not pressed.
+# assert that the pc has been incrememented by 2 if the value of x[x] is 0.
 def test_skip_if_key_not_equal_to_vx():
     chip_8 = Chip8()
     chip_8.opcode = 27138
     chip_8.keys[chip_8.v[chip_8.x(chip_8.opcode)]] = 0
     chip_8.skip_if_key_not_equal_to_vx()
     assert chip_8.pc == 514
+
+
+# set v[x] to the value of the delay timer.
+# assert that the return value of funcion x is equal to 10.
+# assert that the value of v[x] is set to the value of the delay timer.
+def test_set_vx_to_delay_timer():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    chip_8.delay_timer = 1
+    assert chip_8.x(chip_8.opcode) == 10
+    chip_8.set_vx_to_delay_timer()
+    assert chip_8.v[10] == 1
+
+
+# store key press in v[x].
+# assert that the pc remains the same.
+def test_store_keypress_in_vx_key_pressed():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    chip_8.keys[3] = 1
+    chip_8.store_keypress_in_vx()
+    assert chip_8.pc == 512
+
+
+# store key press in v[x].
+# # assert that the pc has been decremented by 2 as no key has been pressed.
+def test_store_keypress_in_vx_no_key_pressed():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    chip_8.store_keypress_in_vx()
+    assert chip_8.pc == 510
+
+
+# set delay timer to v[x].
+# assert that the return value of funcion x is equal to 10.
+# assert that the delay timer is set to the value of v[x].
+def test_set_delay_timer_to_vx():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    assert chip_8.x(chip_8.opcode) == 10
+    chip_8.v[10] = 1
+    chip_8.set_delay_timer_to_vx()
+    assert chip_8.delay_timer == 1
+
+
+# set sound timer to v[x].
+# assert that the return value of funcion x is equal to 10.
+# assert that the sound timer is set to the value of v[x].
+def test_set_sound_timer_to_vx():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    assert chip_8.x(chip_8.opcode) == 10
+    chip_8.v[10] = 1
+    chip_8.set_sound_timer_to_vx()
+    assert chip_8.sound_timer == 1
+
+
+# set i to i plus v[x].
+# assert that the return value of funcion x is equal to 10.
+# assert that i is set to i plus v[x].
+def test_set_i_to_i_plus_vx():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    assert chip_8.x(chip_8.opcode) == 10
+    chip_8.v[10] = 23
+    chip_8.set_i_to_i_plus_vx()
+    assert chip_8.i == 23
