@@ -135,7 +135,7 @@ def test_call_subroutine_at_nnn():
 # assert that the pc has been incrememented by 2 as v[x] equals the return value of function nn.
 def test_skip_if_vx_equals_nn():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.nn(chip_8.opcode) == 2
     chip_8.v[chip_8.x(chip_8.opcode)] = 2
@@ -150,7 +150,7 @@ def test_skip_if_vx_equals_nn():
 # assert that the pc has been incrememented by 2 as v[x] does not equal the return value of function nn.
 def test_skip_if_vx_not_equal_to_nn():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.nn(chip_8.opcode) == 2
     chip_8.v[chip_8.x(chip_8.opcode)] = 43
@@ -177,7 +177,7 @@ def test_skip_if_vx_equals_vy():
 # assert that v[x] has been set to the return value of function nn.
 def test_set_vx_to_nn():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.nn(chip_8.opcode) == 2
     chip_8.set_vx_to_nn()
@@ -190,7 +190,7 @@ def test_set_vx_to_nn():
 # assert that the value of v[x] is equal to the value in v[x] plus the return value of the function nn.
 def test_set_vx_to_vx_plus_nn():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.nn(chip_8.opcode) == 2
     chip_8.v[10] = 23
@@ -204,7 +204,7 @@ def test_set_vx_to_vx_plus_nn():
 # assert that the value of v[x] has been set to the value of v[y].
 def test_set_vx_to_vy():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
     chip_8.v[10] = 12
@@ -219,7 +219,7 @@ def test_set_vx_to_vy():
 # assert that the value of v[x] has been set to the bitwise OR operation between the values in v[x] and v[y].
 def test_set_vx_to_vx_or_vy():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
     chip_8.v[10] = 23
@@ -234,7 +234,7 @@ def test_set_vx_to_vx_or_vy():
 # assert that the value of v[x] has been set to the bitwise AND operation between the values in v[x] and v[y].
 def test_set_vx_to_vx_and_vy():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
     chip_8.v[10] = 23
@@ -249,7 +249,7 @@ def test_set_vx_to_vx_and_vy():
 # assert that the value of v[x] has been set to the bitwise XOR operation between the values in v[x] and v[y].
 def test_set_vx_to_vx_xor_vy():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
     chip_8.v[10] = 23
@@ -265,7 +265,7 @@ def test_set_vx_to_vx_xor_vy():
 # assert that the value of v[x] is set to v[x] plus v[y].
 def test_set_vx_to_vx_plus_vy_no_carry():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
     chip_8.v[10] = 23
@@ -282,7 +282,7 @@ def test_set_vx_to_vx_plus_vy_no_carry():
 # assert that the value of v[x] is set to v[x] plus v[y].
 def test_set_vx_to_vx_plus_vy_carry():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
     chip_8.v[10] = 254
@@ -299,7 +299,7 @@ def test_set_vx_to_vx_plus_vy_carry():
 # assert that the value of v[x] is set to v[x] minus v[y].
 def test_set_vx_to_vx_minus_vy_borrow():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
     chip_8.v[10] = 23
@@ -316,7 +316,7 @@ def test_set_vx_to_vx_minus_vy_borrow():
 # assert that the value of v[x] is set to v[x] minus v[y].
 def test_set_vx_to_vx_minus_vy_no_borrow():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
     chip_8.v[10] = 254
@@ -332,7 +332,7 @@ def test_set_vx_to_vx_minus_vy_no_borrow():
 # assert that the least significant bit of v[x] is stored in v[F].
 def test_set_vx_to_vx_shr_1():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     chip_8.v[10] = 11
     chip_8.set_vx_to_vx_shr_1()
@@ -347,7 +347,7 @@ def test_set_vx_to_vx_shr_1():
 # assert that the value of v[x] is set to v[y] minus v[x].
 def test_set_vx_to_vy_minus_vx_no_borrow():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
     chip_8.v[10] = 23
@@ -364,7 +364,7 @@ def test_set_vx_to_vy_minus_vx_no_borrow():
 # assert that the value of v[x] is set to v[y] minus v[x].
 def test_set_vx_to_vy_minus_vx_borrow():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
     chip_8.v[10] = 254
@@ -380,7 +380,7 @@ def test_set_vx_to_vy_minus_vx_borrow():
 # assert that the most significant bit of v[x] is stored in v[F].
 def test_set_vx_to_vx_shl_1():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     chip_8.v[10] = 200
     chip_8.set_vx_to_vx_shl_1()
@@ -394,8 +394,47 @@ def test_set_vx_to_vx_shl_1():
 # assert that the pc has been incremented by 2 as v[x] does not equal v[y].
 def test_skip_if_vx_not_equal_vy():
     chip_8 = Chip8()
-    chip_8.opcode = 2562
+    chip_8.opcode = 27138
     assert chip_8.x(chip_8.opcode) == 10
     assert chip_8.y(chip_8.opcode) == 0
     chip_8.skip_if_vx_equals_vy()
+    assert chip_8.pc == 514
+
+
+# set i to address nnn
+# assert that 16 bit register i is set to the address nnn
+def test_set_i_to_nn():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    chip_8.set_i_to_nn()
+    assert chip_8.i == 2562
+
+
+# jump to address nnn plus v[0]
+# assert that the pc is now set to nnn plus v[0]
+def test_jump_to_nnn_plus_v0():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    chip_8.v[0x0] = 8
+    chip_8.jump_to_nnn_plus_v0()
+    assert chip_8.pc == 2570
+
+
+# skip next instruction of the key stored in v[x] is pressed
+# assert that the pc has been incrememented by 2 if the value of x[x] is 1
+def test_skip_if_key_equals_vx():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    chip_8.keys[chip_8.v[chip_8.x(chip_8.opcode)]] = 1
+    chip_8.skip_if_key_equals_vx()
+    assert chip_8.pc == 514
+
+
+# skip next instruction of the key stored in v[x] is not pressed
+# assert that the pc has been incrememented by 2 if the value of x[x] is 0
+def test_skip_if_key_not_equal_to_vx():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    chip_8.keys[chip_8.v[chip_8.x(chip_8.opcode)]] = 0
+    chip_8.skip_if_key_not_equal_to_vx()
     assert chip_8.pc == 514
