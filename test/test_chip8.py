@@ -505,3 +505,77 @@ def test_set_i_to_i_plus_vx():
     chip_8.v[10] = 23
     chip_8.set_i_to_i_plus_vx()
     assert chip_8.i == 23
+
+
+# set i to the location of the sprite for the character in v[x].
+# assert that the return value of funcion x is equal to 10.
+# assert that the value of i is equal to 5 * v[x].
+def test_set_i_to_sprite_location_for_vx():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    assert chip_8.x(chip_8.opcode) == 10
+    chip_8.v[10] = 20
+    chip_8.set_i_to_sprite_location_for_vx()
+    assert chip_8.i == 100
+
+
+# store binary-coded decimal representation of v[x] in memory at locations i, i+1 and i+2.
+# assert that the return value of funcion x is equal to 10.
+# assert that memory index 0 is equal to 2.
+# assert that memory index 1 is equal to 4.
+# assert that memory index 2 is equal to 3.
+def test_store_bcd_in_i():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    assert chip_8.x(chip_8.opcode) == 10
+    chip_8.v[10] = 243
+    chip_8.store_bcd_in_i()
+    assert chip_8.memory[0] == 2
+    assert chip_8.memory[1] == 4
+    assert chip_8.memory[2] == 3
+
+
+# store v[0] to v[x] in memory starting at address i, increase the offset of i for each value written but don't alter i.
+# assert that the return value of funcion x is equal to 10.
+# implement while loop to fill v[0] to v[x] with dummy values.
+# assert that the values in memory has been inserted correctly using another while loop.
+def test_store_v0_to_vx_in_memory_from_location_i():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    assert chip_8.x(chip_8.opcode) == 10
+    index = 0
+    value = 1
+    while index <= 9:
+        chip_8.v[index] = value
+        value += 1
+        index += 1
+    chip_8.store_v0_to_vx_in_memory_from_location_i()
+    test_value = 1
+    index = 0
+    while index <= 9:
+        assert chip_8.memory[index] == test_value
+        index += 1
+        test_value += 1
+
+
+# fill v[0] to v[x] from memory starting at address i, increase the offset of i for each value written but don't alter i.
+# assert that the return value of funcion x is equal to 10.
+# implement while loop to fill memory with dummy values.
+# assert that the values in v[0] to v[x] has been inserted correctly using another while loop.
+def test_fill_v0_to_vx_from_memory_location_i():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    assert chip_8.x(chip_8.opcode) == 10
+    index = 0
+    value = 1
+    while index <= 9:
+        chip_8.memory[index] = value
+        value += 1
+        index += 1
+    chip_8.fill_v0_to_vx_from_memory_location_i()
+    test_value = 1
+    index = 0
+    while index <= 9:
+        assert chip_8.v[index] == test_value
+        index += 1
+        test_value += 1

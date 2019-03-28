@@ -200,13 +200,13 @@ class Chip8:
         self.memory[self.i + 1] = (self.v[self.x(self.opcode)] // 10) % 10
         self.memory[self.i + 2] = self.v[self.x(self.opcode)] % 10
 
-    def store_v0_to_vx_in_memory_from_i(self):
+    def store_v0_to_vx_in_memory_from_location_i(self):
         index = 0
         while index <= self.x(self.opcode):
             self.memory[self.i + index] = self.v[index]
             index += 1
 
-    def read_v0_to_vx_from_i(self):
+    def fill_v0_to_vx_from_memory_location_i(self):
         index = 0
         while index <= self.x(self.opcode):
             self.v[index] = self.memory[self.i + index]
@@ -283,8 +283,8 @@ class Chip8:
             0xF01E: self.set_i_to_i_plus_vx,
             0xF029: self.set_i_to_sprite_location_for_vx,
             0xF033: self.store_bcd_in_i,
-            0xF055: self.store_v0_to_vx_in_memory_from_i,
-            0xF065: self.read_v0_to_vx_from_i,
+            0xF055: self.store_v0_to_vx_in_memory_from_location_i,
+            0xF065: self.fill_v0_to_vx_from_memory_location_i,
         }.get(decoded_opcode, lambda: None)()
 
     def decode_opcode(self, opcode):
