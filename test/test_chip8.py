@@ -420,6 +420,35 @@ def test_jump_to_nnn_plus_v0():
     assert chip_8.pc == 2570
 
 
+# draw to the display
+# x-cord == v[10]
+# y-cord == v[0]
+# height == 2
+# assert that v[0xF] is equal to 0.
+# assert that elements 74 to 81 (8 elements) of the display array have been XOR'd to 1.
+# assert that the elements before 74 are all zero and the elements after 81 ar all 0.
+def test_draw_to_display():
+    chip_8 = Chip8()
+    chip_8.opcode = 27138
+    chip_8.v[0] = 1
+    chip_8.v[10] = 10
+    chip_8.memory[0] = 255
+    chip_8.draw_to_display()
+    assert chip_8.v[0xF] == 0
+    index = 74
+    while index <= 81:
+        assert chip_8.display[index] == 1
+        index += 1
+    index = 0
+    while index < 74:
+        assert chip_8.display[index] == 0
+        index += 1
+    index = 82
+    while index < len(chip_8.display):
+        assert chip_8.display[index] == 0
+        index += 1
+
+
 # skip next instruction of the key stored in v[x] is pressed.
 # assert that the pc has been incrememented by 2 if the value of x[x] is 1.
 def test_skip_if_key_equals_vx():
