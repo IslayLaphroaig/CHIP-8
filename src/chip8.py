@@ -249,6 +249,15 @@ class Chip8:
             0xF065: opcode,
         }.get(opcode, lambda: None)
 
+    def decode_opcode(self, opcode):
+        first_four_bits_of_opcode = opcode & 0xF000
+        return {
+            0x0000: self.least_significant_bits(opcode),
+            0x8000: self.eightxy0_to_eightxye(opcode),
+            0xE000: self.ex9e_to_fx65(opcode),
+            0xF000: self.ex9e_to_fx65(opcode),
+        }.get(first_four_bits_of_opcode, first_four_bits_of_opcode)
+
     def execute_opcode(self, decoded_opcode):
         return {
             0x0000: self.clear_screen,
@@ -286,15 +295,6 @@ class Chip8:
             0xF055: self.store_v0_to_vx_in_memory_from_location_i,
             0xF065: self.fill_v0_to_vx_from_memory_location_i,
         }.get(decoded_opcode, lambda: None)()
-
-    def decode_opcode(self, opcode):
-        first_four_bits_of_opcode = opcode & 0xF000
-        return {
-            0x0000: self.least_significant_bits(opcode),
-            0x8000: self.eightxy0_to_eightxye(opcode),
-            0xE000: self.ex9e_to_fx65(opcode),
-            0xF000: self.ex9e_to_fx65(opcode),
-        }.get(first_four_bits_of_opcode, first_four_bits_of_opcode)
 
     def cycle(self):
         self.opcode = self.memory[self.pc] << 8 | self.memory[self.pc + 1]

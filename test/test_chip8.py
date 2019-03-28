@@ -608,3 +608,43 @@ def test_fill_v0_to_vx_from_memory_location_i():
         assert chip_8.v[index] == test_value
         index += 1
         test_value += 1
+
+
+# return least significant bits key from dictionary
+# assert that passing in an opcode value of 16 returns the key 0x0000
+# assert that passing in an opcode value of 14 returns the key 0x000E
+def test_least_significant_bits():
+    chip_8 = Chip8()
+    assert chip_8.least_significant_bits(16) == 0x0000
+    assert chip_8.least_significant_bits(14) == 0x000E
+
+
+# return opcodes 8XY0 to 8XYE
+# assert that passing in an opcode value of 34000 returns the key 0x8000
+# assert that passing in an opcode value of 34014 returns the key 0x800E
+def test_eightxy0_to_eightxye():
+    chip_8 = Chip8()
+    assert chip_8.eightxy0_to_eightxye(34000) == 0x8000
+    assert chip_8.eightxy0_to_eightxye(34014) == 0x800E
+
+
+# return opcodes 0xE09E to 0xF065
+# assert that passing in an opcode value of 60062 returns the key 0xE09E
+# assert that passing in an opcode value of 61541 returns the key 0xF065
+def test_ex9e_to_fx65():
+    chip_8 = Chip8()
+    assert chip_8.ex9e_to_fx65(60062) == 0xE09E
+    assert chip_8.ex9e_to_fx65(61541) == 0xF065
+
+
+# decode the opcode and establish the first four bits as the key
+# assert that passing in an opcode value of 16 returns the key 0x0000
+# assert that passing in an opcode value of 34000 returns the key 0x8000
+# assert that passing in an opcode value of 60062 returns the key 0xE000
+# assert that passing in an opcode value of 61541 returns the key 0xF000
+def test_decode_opcode():
+    chip_8 = Chip8()
+    assert chip_8.decode_opcode(16) == 0x0000
+    assert chip_8.decode_opcode(34000) == 0x8000
+    assert chip_8.decode_opcode(60062) == 0xE000
+    assert chip_8.decode_opcode(61541) == 0xF000
