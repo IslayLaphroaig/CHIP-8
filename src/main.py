@@ -172,9 +172,9 @@ def main():
             if chip_8.play_sound == True:
                 if platform == 'win32':
                     Beep(FREQUENCY , DURATION_WINDOWS)
-                if platform == 'linux2':
+                elif platform.startswith('linux'):
                     system('play -nq -t alsa synth {} sine {}'.format(DURATION_LINUX_MAC, FREQUENCY))
-                if platform == 'darwin':
+                elif platform == 'darwin':
                     system('play -nq -t alsa synth {} sine {}'.format(DURATION_LINUX_MAC, FREQUENCY))
                 chip_8.play_sound = False
                 break
