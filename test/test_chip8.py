@@ -646,5 +646,5 @@ def test_decode_opcode():
     chip_8 = Chip8()
     assert chip_8.decode_opcode(16) == 0x0000
     assert chip_8.decode_opcode(34000) == 0x8000
-    assert chip_8.decode_opcode(60062) == 0xE000
-    assert chip_8.decode_opcode(61541) == 0xF000
+    assert chip_8.decode_opcode(57502) == 0xE09E
+    assert chip_8.decode_opcode(61541) == 0xF065
