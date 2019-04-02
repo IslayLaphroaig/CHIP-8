@@ -15,8 +15,9 @@ from OpenGL.GLU import gluOrtho2D
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 from sys import platform
-from winsound import Beep
 from chip8 import Chip8
+if platform.startswith('win'):
+    from winsound import Beep
 
 
 DISPLAY_HEIGHT = 32
@@ -170,11 +171,11 @@ def main():
         while not chip_8.draw_flag:
             chip_8.update_timers()
             if chip_8.play_sound == True:
-                if platform == 'win32':
+                if platform.startswith('win'):
                     Beep(FREQUENCY , DURATION_WINDOWS)
-                elif platform.startswith('linux'):
+                elif platform.startswith('lin'):
                     system('play -nq -t alsa synth {} sine {}'.format(DURATION_LINUX_MAC, FREQUENCY))
-                elif platform == 'darwin':
+                elif platform.startswith('dar'):
                     system('play -nq -t alsa synth {} sine {}'.format(DURATION_LINUX_MAC, FREQUENCY))
                 chip_8.play_sound = False
                 break
